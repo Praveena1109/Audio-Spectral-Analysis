@@ -10,29 +10,29 @@ from sklearn import preprocessing
 plt.rcParams['figure.figsize']=[20,10]
 plt.rcParams.update({'font.size':5})
 from scipy.io import wavfile
-import warnings
 import json
 
+import warnings
 warnings.filterwarnings('ignore') 
 warnings.warn('Do not show this message')
-base="./Adish_aroh_w1/"
+
+base="./Adish_aroh_w7/"
 sar0=base+"sargam0.wav"
 sar1=base+"sargam1.wav"
-sar2=base+"sargam3.wav"
-sar3=base+"sargam4.wav"
-sar4=base+"sargam5.wav"
-sar5=base+"sargam6.wav"
-sar6=base+"sargam7.wav"
-sar7=base+"sargam9.wav"
-sar8=base+"sargam10.wav"
-sar9=base+"sargam11.wav"
-sar10=base+"sargam12.wav"
-sar11=base+"sargam13.wav"
-sar12=base+"sargam14.wav"
-sar13=base+"sargam16.wav"
-
-voice, sr = librosa.load(sar0)
-voice1, _ = librosa.load(sar0)
+sar2=base+"sargam2.wav"
+sar3=base+"sargam3.wav"
+sar4=base+"sargam4.wav"
+sar5=base+"sargam5.wav"
+sar6=base+"sargam6.wav"
+sar7=base+"sargam7.wav"
+sar8=base+"sargam8.wav"
+sar9=base+"sargam9.wav"
+sar10=base+"sargam10.wav"
+sar11=base+"sargam11.wav"
+sar12=base+"sargam12.wav"
+sar13=base+"sargam13.wav"
+ 
+voice1, sr = librosa.load(sar0)
 voice2, _ = librosa.load(sar1)
 voice3, _ = librosa.load(sar2)
 voice4, _ = librosa.load(sar3)
@@ -66,6 +66,7 @@ def getFundamental(Xaxis,bins):
         if j>0:
             return i 
             
+
 def getIndxTill(end,freq,indx,gap):
     for i in range(indx,len(freq)):
         max=end*gap+10
@@ -121,6 +122,7 @@ def plot_time_domain(voice):
 
 def plot_power_spectrum(path,voice,i):
     X = np.fft.fft(voice)
+    print(len(X))
     X_mag = np.absolute(X)
     power_spectrum = np.square(X_mag)
     f = np.linspace(0, sr, len(power_spectrum))
@@ -135,6 +137,7 @@ def plot_power_spectrum(path,voice,i):
     plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
 
 plt.figure(1)
+plt.figure
 plot_power_spectrum(sar0,voice1,1)
 plot_power_spectrum(sar1,voice2,2)
 plot_power_spectrum(sar2,voice3,3)
@@ -167,8 +170,7 @@ coordinates.append(findCoordinates(sar10,voice11,11))
 coordinates.append(findCoordinates(sar11,voice12,12))
 coordinates.append(findCoordinates(sar12,voice13,13))
 coordinates.append(findCoordinates(sar13,voice14,14))
-# print("CO",coordinates)
-
+ 
 grey_count = 0
 central_count = 0
 for coordinate in coordinates:
@@ -198,14 +200,13 @@ data[base] = dictionary
 with open(filename, "w") as file:
     json.dump(data, file)
 
-plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-plt.show()
+data = np.array(coordinates)
+y, x = data.T
  
 data = np.array(coordinates)
 y, x = data.T 
 
 n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
-
 
 plt.figure(figsize=(25, 15))  
 plt.rcParams['font.size'] = '10' 
@@ -228,7 +229,6 @@ plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
 plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
 plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
 
-
 plt.xlim(0,1)
 plt.ylim(0,1)
 for i,j,k in zip(x,y,n):
@@ -238,7 +238,6 @@ for i,j,k in zip(x,y,n):
                  textcoords="offset points", # how to position the text
                  xytext=(0,10), # distance from text to points (x,y)
                  ha='center',) 
-
 
 plt.show()
 plt.close()

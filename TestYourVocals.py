@@ -3,43 +3,43 @@ import pyaudio
 import wave
 import time
 
-print("Enter your name: ")
-name = input()
-list_of_Songs = ["Kodaline - All I Want",""]
-for i,j in enumerate(list_of_Songs):
-    print(i,j)
-print("Select one song")
-song_no = int(input())
-lyrics = ["All I want is nothing more To hear you knocking at my door Cause if I could see your face once more I could die as a happy man I'm sure When you said your last goodbye died a little bit inside I lay in tears in bed all night Alone without you by my side But if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Ooh oh Ooh oh Ooh oh Ooh oh Cause you brought out the best of me A part of me I'd never seen You took my soul wiped it clean Our love was made for movie screens But if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Ooh oh Ooh oh Ooh oh Ooh oh Ooh ah Ooh oh Ooh, if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Like you, ooh"]
-print(lyrics[song_no])
+# print("Enter your name: ")
+# name = input()
+# list_of_Songs = ["Kodaline - All I Want"]
+# for i,j in enumerate(list_of_Songs):
+#     print(i,j)
+# print("Select one song")
+# song_no = int(input())
+# lyrics = ["All I want is nothing more To hear you knocking at my door Cause if I could see your face once more I could die as a happy man I'm sure When you said your last goodbye died a little bit inside I lay in tears in bed all night Alone without you by my side But if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Ooh oh Ooh oh Ooh oh Ooh oh Cause you brought out the best of me A part of me I'd never seen You took my soul wiped it clean Our love was made for movie screens But if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Ooh oh Ooh oh Ooh oh Ooh oh Ooh ah Ooh oh Ooh, if you loved me Why did you leave me Take my body Take my body All I want is All I need is To find somebody I'll find somebody Like you, ooh"]
+# # print(lyrics[song_no])
 
 ORIGINAL_FILE = "./Kodaline-All-I-Want_Vocals.wav"
 
-audio = pyaudio.PyAudio()
-stream = audio.open(format = pyaudio.paInt16, channels=1, rate = 44100, input=True, frames_per_buffer=1024)
-print("Recording started for 4 mins 54 secs")
-frames = []
-timeout = 60 # [seconds]
-timeout_start = time.time()
-while time.time() < timeout_start + timeout:
-    data = stream.read(1024)
-    frames.append(data)
+# audio = pyaudio.PyAudio()
+# stream = audio.open(format = pyaudio.paInt16, channels=1, rate = 44100, input=True, frames_per_buffer=1024)
+# print("Recording started for 30 secs")
+# frames = []
+# timeout = 30 # [seconds]
+# timeout_start = time.time()
+# while time.time() < timeout_start + timeout:
+#     data = stream.read(60)
+#     frames.append(data)
 
-stream.stop_stream()
-stream.close()
-audio.terminate()
+# stream.stop_stream()
+# stream.close()
+# audio.terminate()
 
-print("Finished Recording")
+# print("Finished Recording")
 
-sound_file = wave.open(name+".wav","wb")
-sound_file.setnchannels(1)
-sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
-sound_file.setframerate(44100)
-sound_file.writeframes(b''.join(frames))
-sound_file.close()
+# sound_file = wave.open(name+".wav","wb")
+# sound_file.setnchannels(1)
+# sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
+# sound_file.setframerate(44100)
+# sound_file.writeframes(b''.join(frames))
+# sound_file.close()
 
 MISSING_PITCH_PLACEHOLDER = 0
-RECORD_SECONDS = 60
+RECORD_SECONDS = 30
 
 def calculateScore(audio_file_one, audio_file_two):
     file_one_pitches = getPitch(audio_file_one)
@@ -73,7 +73,6 @@ def getPitch(filename):
         if read < hop_s:
             break
     return pitches
-
 
 def convertPitchesToNotes(pitches):
     pitchDict = makePitchMap()
@@ -176,5 +175,5 @@ def reduceWhiteNoise(userArray, realArray):
                 userArray[i+interval//2] = 0
     return userArray
 
-score = calculateScore("./Kodaline-All-I-Want_Vocals.wav", "./"+name+".wav")
+score = calculateScore("./Kodaline-All-I-Want_Vocals.wav", "./Kodaline-All-I-Want_Vocals.wav")
 print(score)

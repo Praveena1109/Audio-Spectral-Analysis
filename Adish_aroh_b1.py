@@ -15,24 +15,24 @@ import json
 
 warnings.filterwarnings('ignore') 
 warnings.warn('Do not show this message')
-base="./Adish_aroh_w1/"
+base="./Adish_aroh_b1/"
 sar0=base+"sargam0.wav"
 sar1=base+"sargam1.wav"
-sar2=base+"sargam3.wav"
-sar3=base+"sargam4.wav"
-sar4=base+"sargam5.wav"
-sar5=base+"sargam6.wav"
-sar6=base+"sargam7.wav"
-sar7=base+"sargam9.wav"
-sar8=base+"sargam10.wav"
-sar9=base+"sargam11.wav"
-sar10=base+"sargam12.wav"
-sar11=base+"sargam13.wav"
-sar12=base+"sargam14.wav"
-sar13=base+"sargam16.wav"
+sar2=base+"sargam2.wav"
+sar3=base+"sargam3.wav"
+sar4=base+"sargam4.wav"
+sar5=base+"sargam5.wav"
+sar6=base+"sargam6.wav"
+sar7=base+"sargam7.wav"
+sar8=base+"sargam8.wav"
+sar9=base+"sargam9.wav"
+sar10=base+"sargam10.wav"
+sar11=base+"sargam11.wav"
+sar12=base+"sargam12.wav"
+sar13=base+"sargam13.wav"
 
-voice, sr = librosa.load(sar0)
-voice1, _ = librosa.load(sar0)
+# voice, sr = librosa.load(base+"adish_sargam_aroh_b1.wav")
+voice1, sr = librosa.load(sar0)
 voice2, _ = librosa.load(sar1)
 voice3, _ = librosa.load(sar2)
 voice4, _ = librosa.load(sar3)
@@ -64,8 +64,8 @@ def remove_till_limit(Xaxis,limit,maxBins):
 def getFundamental(Xaxis,bins):
     for i,j in enumerate(Xaxis[20:bins]):
         if j>0:
-            return i 
-            
+            return i
+
 def getIndxTill(end,freq,indx,gap):
     for i in range(indx,len(freq)):
         max=end*gap+10
@@ -108,8 +108,6 @@ def findCoordinates(path,voice,i):
     Harmonics = [i for i in Harmonics if i != 0]
     midBand = sum(Harmonics[1:4])/sum(Harmonics)
     highBand = sum(Harmonics[4:])/sum(Harmonics)
-    # print("Harmonics", Harmonics)
-    # print(midBand,highBand)
     return [midBand,highBand]
 
 def plot_time_domain(voice):
@@ -135,6 +133,7 @@ def plot_power_spectrum(path,voice,i):
     plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
 
 plt.figure(1)
+plt.figure
 plot_power_spectrum(sar0,voice1,1)
 plot_power_spectrum(sar1,voice2,2)
 plot_power_spectrum(sar2,voice3,3)
@@ -150,7 +149,7 @@ plot_power_spectrum(sar11,voice12,12)
 plot_power_spectrum(sar12,voice13,13)
 plot_power_spectrum(sar13,voice14,14)
 plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-plt.show()
+plt.show() 
 
 coordinates = []
 coordinates.append(findCoordinates(sar0,voice1,1))
@@ -167,7 +166,6 @@ coordinates.append(findCoordinates(sar10,voice11,11))
 coordinates.append(findCoordinates(sar11,voice12,12))
 coordinates.append(findCoordinates(sar12,voice13,13))
 coordinates.append(findCoordinates(sar13,voice14,14))
-# print("CO",coordinates)
 
 grey_count = 0
 central_count = 0
@@ -176,6 +174,9 @@ for coordinate in coordinates:
         grey_count+=1
     if (0.1<=coordinate[1]<= 0.5) and (0.2<=coordinate[0]<=0.7):
         central_count+=1
+
+# print("Grey Count",grey_count)
+# print("Central Count",central_count)
 
 filename = 'output.json'
 
@@ -187,7 +188,7 @@ dictionary ={
     "grey_count" : grey_count,
     "central_count" : central_count
 }
-
+  
 with open(filename, "r") as file:
     data = json.loads(file.read())
 try:
@@ -198,14 +199,9 @@ data[base] = dictionary
 with open(filename, "w") as file:
     json.dump(data, file)
 
-plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-plt.show()
- 
 data = np.array(coordinates)
-y, x = data.T 
-
+y, x = data.T
 n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
-
 
 plt.figure(figsize=(25, 15))  
 plt.rcParams['font.size'] = '10' 
@@ -228,18 +224,10 @@ plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
 plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
 plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
 
-
 plt.xlim(0,1)
 plt.ylim(0,1)
 for i,j,k in zip(x,y,n):
     label = k
-    plt.annotate(label, # this is the text
-                 (i,j), # these are the coordinates to position the label
-                 textcoords="offset points", # how to position the text
-                 xytext=(0,10), # distance from text to points (x,y)
-                 ha='center',) 
-
-
+    plt.annotate(label,(i,j), textcoords="offset points", xytext=(0,10),ha='center') 
 plt.show()
 plt.close()
-

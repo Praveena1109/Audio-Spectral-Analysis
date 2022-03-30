@@ -1,3 +1,4 @@
+# Adish_avaroh_b1.py
 import os
 import matplotlib.pyplot as plt
 import librosa, librosa.display
@@ -15,24 +16,26 @@ import json
 
 warnings.filterwarnings('ignore') 
 warnings.warn('Do not show this message')
-base="./Adish_aroh_w1/"
+
+base="./Adish_avaroh_w7/"
 sar0=base+"sargam0.wav"
 sar1=base+"sargam1.wav"
-sar2=base+"sargam3.wav"
-sar3=base+"sargam4.wav"
-sar4=base+"sargam5.wav"
-sar5=base+"sargam6.wav"
-sar6=base+"sargam7.wav"
-sar7=base+"sargam9.wav"
-sar8=base+"sargam10.wav"
-sar9=base+"sargam11.wav"
-sar10=base+"sargam12.wav"
-sar11=base+"sargam13.wav"
-sar12=base+"sargam14.wav"
-sar13=base+"sargam16.wav"
+sar2=base+"sargam2.wav"
+sar3=base+"sargam3.wav"
+sar4=base+"sargam4.wav"
+sar5=base+"sargam5.wav"
+sar6=base+"sargam6.wav"
+sar7=base+"sargam7.wav"
+sar8=base+"sargam8.wav"
+sar9=base+"sargam9.wav"
+sar10=base+"sargam10.wav"
+sar11=base+"sargam11.wav"
+sar12=base+"sargam12.wav"
+sar13=base+"sargam13.wav"
+sar14=base+"sargam14.wav"
+sar15=base+"sargam15.wav"
 
-voice, sr = librosa.load(sar0)
-voice1, _ = librosa.load(sar0)
+voice1, sr = librosa.load(sar0)
 voice2, _ = librosa.load(sar1)
 voice3, _ = librosa.load(sar2)
 voice4, _ = librosa.load(sar3)
@@ -46,6 +49,8 @@ voice11, _ = librosa.load(sar10)
 voice12, _ = librosa.load(sar11)
 voice13, _ = librosa.load(sar12)
 voice14, _ = librosa.load(sar13)
+voice15, _ = librosa.load(sar14)
+voice16, _ = librosa.load(sar15)
 
 def limitFreq(freq,size):
     for i,j in enumerate(freq):
@@ -64,8 +69,8 @@ def remove_till_limit(Xaxis,limit,maxBins):
 def getFundamental(Xaxis,bins):
     for i,j in enumerate(Xaxis[20:bins]):
         if j>0:
-            return i 
-            
+            return i
+
 def getIndxTill(end,freq,indx,gap):
     for i in range(indx,len(freq)):
         max=end*gap+10
@@ -87,7 +92,8 @@ def pitchEstimator(path):
         if j > 0.89:
             lis.append(i)
     val=[frequency[i] for i in lis]
-    return sum(val)/len(val)
+    return sum(val)/len(val) 
+
 
 Pitch=[]
 def findCoordinates(path,voice,i):
@@ -110,7 +116,7 @@ def findCoordinates(path,voice,i):
     highBand = sum(Harmonics[4:])/sum(Harmonics)
     # print("Harmonics", Harmonics)
     # print(midBand,highBand)
-    return [midBand,highBand]
+    return [midBand,highBand] 
 
 def plot_time_domain(voice):
     plt.plot(voice)
@@ -126,15 +132,16 @@ def plot_power_spectrum(path,voice,i):
     f = np.linspace(0, sr, len(power_spectrum))
     f_bins=limitFreq(f,2000)
     pitch=round(pitchEstimator(path))
+    print(f"Fundamental Frequency(Pitch) is {pitch} Hz") 
     Pitch.append(pitch)
-    # print(f"Fundamental Frequency(Pitch) is {pitch} Hz") 
-    plt.subplot(2,7,i)
-    plt.plot(f[1:f_bins], power_spectrum[1:f_bins])
+    plt.subplot(2,8,i)
+    plt.plot(f[5:f_bins], power_spectrum[5:f_bins])
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Power')
     plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
 
-plt.figure(1)
+ 
+plt.figure(1) 
 plot_power_spectrum(sar0,voice1,1)
 plot_power_spectrum(sar1,voice2,2)
 plot_power_spectrum(sar2,voice3,3)
@@ -149,8 +156,10 @@ plot_power_spectrum(sar10,voice11,11)
 plot_power_spectrum(sar11,voice12,12)
 plot_power_spectrum(sar12,voice13,13)
 plot_power_spectrum(sar13,voice14,14)
+plot_power_spectrum(sar14,voice15,15)
+plot_power_spectrum(sar15,voice16,16)
 plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-plt.show()
+plt.show() 
 
 coordinates = []
 coordinates.append(findCoordinates(sar0,voice1,1))
@@ -167,8 +176,10 @@ coordinates.append(findCoordinates(sar10,voice11,11))
 coordinates.append(findCoordinates(sar11,voice12,12))
 coordinates.append(findCoordinates(sar12,voice13,13))
 coordinates.append(findCoordinates(sar13,voice14,14))
+coordinates.append(findCoordinates(sar14,voice15,15))
+coordinates.append(findCoordinates(sar15,voice16,16))
 # print("CO",coordinates)
-
+ 
 grey_count = 0
 central_count = 0
 for coordinate in coordinates:
@@ -177,17 +188,20 @@ for coordinate in coordinates:
     if (0.1<=coordinate[1]<= 0.5) and (0.2<=coordinate[0]<=0.7):
         central_count+=1
 
+print("Grey Count",grey_count)
+print("Central Count",central_count)
+
 filename = 'output.json'
 
 dictionary ={
 
-    "tonic" : Pitch[0],
-    "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
-    "highest2": [Pitch[9],coordinates[9][0],coordinates[9][1]],
+    "tonic" : Pitch[-1],
+    "lowest1" : [Pitch[11],coordinates[11][0],coordinates[11][1]],
+    "lowest2": [Pitch[10],coordinates[10][0],coordinates[10][1]],
     "grey_count" : grey_count,
     "central_count" : central_count
 }
-
+  
 with open(filename, "r") as file:
     data = json.loads(file.read())
 try:
@@ -198,13 +212,9 @@ data[base] = dictionary
 with open(filename, "w") as file:
     json.dump(data, file)
 
-plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-plt.show()
- 
 data = np.array(coordinates)
 y, x = data.T 
-
-n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
+n=['sa`','ni','dha','pa','ma','ga','re','`sa','`ni','`dha','`pa','`ma','pa','dha','ni','sa']
 
 
 plt.figure(figsize=(25, 15))  
@@ -227,7 +237,6 @@ plt.plot([1,0],[0,1], 'k-',linewidth=1)
 plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
 plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
 plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
-
 
 plt.xlim(0,1)
 plt.ylim(0,1)
