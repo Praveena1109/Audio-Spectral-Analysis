@@ -32,11 +32,9 @@ voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 # iqr = scipy.stats.iqr(freqs)
 # print(mean, std, maxv, minv, median, skew, kurt, q1, q3, mode, iqr)
 
-
 # Zero Crossing Rate
 # zero_crossings = sum(librosa.zero_crossings(voice, pad=False))
 # print(zero_crossings)
-
 
 # Energy
 # e = np.sum(voice**2)
