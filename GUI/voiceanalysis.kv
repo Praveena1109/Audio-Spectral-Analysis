@@ -1,0 +1,205 @@
+WindowManager:
+    FirstWindow:
+    SecondWindow:
+    ThirdWindow:
+    FourthWindow:
+    FifthWindow:
+    SixthWindow:
+
+
+<FirstWindow>:
+    name: 'first'
+    tonic:tonic
+    type:type
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        GridLayout:
+            cols:2
+            spacing: 20
+            padding:50
+            Label:
+                text: "Enter Tonic Note: "
+            TextInput:
+                id: tonic
+                multiline:False
+            Label:
+                text: "Enter Type of Sargam: "
+            TextInput:
+                id: type
+                multiline:False
+        GridLayout:
+            cols:4
+            spacing: 20
+            padding:50
+            Button:
+                text: "RECORD"
+                on_press: root.startrecord()
+            Button:
+                text: "STOP"
+                on_press: root.stoprecord()
+            Button:
+                text: "SAVE"
+                on_press: root.saverecord()
+            Button:
+                text: "NEXT"
+                on_release:
+                    app.root.current = 'second'
+                    root.manager.transition.direction = 'left'
+
+<SecondWindow>:
+    name: 'second'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'first'
+                root.manager.transition.direction = 'right'
+        Button:
+            text: "Determine Vocal Range"
+            on_release:
+                app.root.current = 'third'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: "Determine Vocal Features"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: "View Tristimulus Diagram"
+            on_release:
+                app.root.current = 'fifth'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: "View Power Spectrum"
+            on_release:
+                app.root.current = 'sixth'
+                root.manager.transition.direction = 'left'
+
+<ThirdWindow>:
+    name: 'third'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 10
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'
+        Button:
+            text: "ANALYSE"
+            on_press: root.analyserange()
+
+        GridLayout:
+            cols:2
+            spacing: 10
+            padding: 30
+            Label:
+                text: "Tonic Range"
+            Label:
+                id: tonicrange
+                text: ""
+                # background_color: (1,1,1,1)
+                # canvas.before:
+                #     Color:
+                #         rgba: self.background_color
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
+
+            Label:
+                text: "Lowest Note"
+            Label:
+                id: lowestnote
+                text: ""
+                # background_color: (1,1,1,1)
+                # canvas.before:
+                #     Color:
+                #         rgba: self.background_color
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
+            Label:
+                text: "Highest Note"
+            Label:
+                id: highestnote
+                text: ""
+                # background_color: (1,1,1,1)
+                # canvas.before:
+                #     Color:
+                #         rgba: self.background_color
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
+            Label:
+                text: "Closest Key Frequency"
+            Label:
+                id: closestkey
+                text: ""
+                # background_color: (1,1,1,1)
+                # canvas.before:
+                #     Color:
+                #         rgba: self.background_color
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
+            Label:
+                text: "Keyboard Key"
+            Label:
+                id: keyboardkey
+                text: ""
+                # background_color: (1,1,1,1)
+                # canvas.before:
+                #     Color:
+                #         rgba: self.background_color
+                #     Rectangle:
+                #         size: self.size
+                #         pos: self.pos
+
+<FourthWindow>:
+    name: 'fourth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'
+
+
+<FifthWindow>:
+    name: 'fifth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'
+
+<SixthWindow>:
+    name: 'sixth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'

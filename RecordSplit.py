@@ -8,38 +8,39 @@ for _ in range(6):
     tonic = int(input())
     print("Select Type: ")
     type = input()
-    audio = pyaudio.PyAudio()
-    stream = audio.open(format = pyaudio.paInt16, channels=1, rate = 44100, input=True, frames_per_buffer=1024)
-    print("Started recording")
-    print("Press CTRL+C to stop recording")
-    frames = []
-    # timeout = 77  # [seconds]
-    # timeout_start = time.time()
-    # while time.time() < timeout_start + timeout:
-    #     data = stream.read(1024) 
-    #     frames.append(data)
-    try:
-        while True:
-            data = stream.read(1024)
-            frames.append(data)
-    except KeyboardInterrupt:
-        print("Done recording")
-    except Exception as e:
-        print(str(e))
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-    print("Finished Recording")
+    # audio = pyaudio.PyAudio()
+    # stream = audio.open(format = pyaudio.paInt16, channels=1, rate = 44100, input=True, frames_per_buffer=1024)
+    # print("Started recording")
+    # print("Press CTRL+C to stop recording")
+    # frames = []
+    # # timeout = 77  # [seconds]
+    # # timeout_start = time.time()
+    # # while time.time() < timeout_start + timeout:
+    # #     data = stream.read(1024) 
+    # #     frames.append(data)
+    # try:
+    #     while True:
+    #         data = stream.read(1024)
+    #         frames.append(data)
+    # except KeyboardInterrupt:
+    #     print("Done recording")
+    # except Exception as e:
+    #     print(str(e))
+    # stream.stop_stream()
+    # stream.close()
+    # audio.terminate()
+    # print("Finished Recording")
+
     folder_name = type+'_'+str(tonic)
     name=type+'_'+str(tonic)+'.wav' 
 
-    sound_file = wave.open(name,"wb")
-    sound_file.setnchannels(1)
-    sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
-    sound_file.setframerate(44100)
-    sound_file.writeframes(b''.join(frames))
-    sound_file.close()
-    os.rename(name, f'AudioFiles/{name}')
+    # sound_file = wave.open(name,"wb")
+    # sound_file.setnchannels(1)
+    # sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
+    # sound_file.setframerate(44100)
+    # sound_file.writeframes(b''.join(frames))
+    # sound_file.close()
+    # os.rename(name, f'AudioRecord/{name}')
 
 
     from pydub import AudioSegment
@@ -68,10 +69,10 @@ for _ in range(6):
         # Use the loaded audio.
         song, 
         # Specify that a silent chunk must be at least 2 seconds or 2000 ms long.
-        min_silence_len = 50,
+        min_silence_len = 100,
         # Consider a chunk silent if it's quieter than -16 dBFS.
         # (You may want to adjust this parameter.)
-        silence_thresh = -20
+        silence_thresh = -35
     )
     # Process each chunk with your parameters
     for i, chunk in enumerate(chunks):
@@ -98,7 +99,7 @@ for _ in range(6):
 
     for filename in sorted(os.listdir(folder)):
         f = os.path.join(folder, filename)   
-        if os.path.getsize(f) < 50*1024:
+        if os.path.getsize(f) < 80*1024:
             os.remove(f) 
         # print(f,' --> ',os.path.getsize(f))
 
