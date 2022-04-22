@@ -90,27 +90,6 @@ voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 # plt.title('Harmonic + Percussive')
 # plt.show()
 
-# showing differences in STFT representations
-# D = librosa.stft(voice)
-# H, P = librosa.decompose.hpss(D)
-# plt.figure(figsize=(15, 7))
-# plt.subplot(3, 1, 1)
-# librosa.display.specshow(librosa.amplitude_to_db(np.abs(D), ref=np.max), y_axis='log')
-# plt.colorbar(format='%+2.0f dB')
-# plt.title('Full power spectrogram: Harmonic + Percussive')
-# # harmonic spectrogram will show more horizontal/pitch-dependent changes
-# plt.subplot(3, 1, 2)
-# librosa.display.specshow(librosa.amplitude_to_db(np.abs(H), ref=np.max), y_axis='log')
-# plt.colorbar(format='%+2.0f dB')
-# plt.title('Harmonic power spectrogram')
-# plt.subplot(3, 1, 3)
-# # percussive spectrogram will show more vertical/time-dependent changes
-# librosa.display.specshow(librosa.amplitude_to_db(np.abs(P), ref=np.max), y_axis='log')
-# plt.colorbar(format='%+2.0f dB')
-# plt.title('Percussive power spectrogram')
-# plt.tight_layout()
-# plt.show()
-
 
 
 # An estimate of the tempo in Beats Per Minute (BPM).
@@ -162,7 +141,7 @@ voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 # plt.colorbar()
 # plt.ylabel('Frequency bands')
 # plt.title('Spectral contrast')
-# plt.show()
+# plt.show() 
 
 # spectral_flatness=librosa.feature.spectral_flatness(voice)[0]
 

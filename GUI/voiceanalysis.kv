@@ -5,6 +5,24 @@ WindowManager:
     FourthWindow:
     FifthWindow:
     SixthWindow:
+    SeventhWindow:
+    EighthWindow:
+    NinethWindow:
+    TenthWindow:
+    EleventhWindow:
+    TwelvethWindow:
+    ThirteenthWindow:
+    FourteenthWindow:
+    FifteenthWindow:
+    SixteenthWindow:
+    SeventeenthWindow:
+    EighteenthWindow:
+    NineteenthWindow:
+    TwentythWindow:
+    TwentyfirstWindow:
+    TwentysecondWindow:
+    TwentythirdWindow:
+    TwentyfourthWindow:
 
 
 <FirstWindow>:
@@ -35,14 +53,19 @@ WindowManager:
             spacing: 20
             padding:50
             Button:
+                id: record
                 text: "RECORD"
-                on_press: root.startrecord()
+                on_press:
+                    root.startrecord()
             Button:
+                id: stop
                 text: "STOP"
-                on_press: root.stoprecord()
+                on_press:
+                    root.stoprecord()
+
             Button:
                 text: "SAVE"
-                on_press: root.saverecord()
+                on_release: root.saverecord()
             Button:
                 text: "NEXT"
                 on_release:
@@ -107,62 +130,28 @@ WindowManager:
             Label:
                 id: tonicrange
                 text: ""
-                # background_color: (1,1,1,1)
-                # canvas.before:
-                #     Color:
-                #         rgba: self.background_color
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
 
             Label:
                 text: "Lowest Note"
             Label:
                 id: lowestnote
                 text: ""
-                # background_color: (1,1,1,1)
-                # canvas.before:
-                #     Color:
-                #         rgba: self.background_color
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
+
             Label:
                 text: "Highest Note"
             Label:
                 id: highestnote
                 text: ""
-                # background_color: (1,1,1,1)
-                # canvas.before:
-                #     Color:
-                #         rgba: self.background_color
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
             Label:
                 text: "Closest Key Frequency"
             Label:
                 id: closestkey
                 text: ""
-                # background_color: (1,1,1,1)
-                # canvas.before:
-                #     Color:
-                #         rgba: self.background_color
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
             Label:
                 text: "Keyboard Key"
             Label:
                 id: keyboardkey
                 text: ""
-                # background_color: (1,1,1,1)
-                # canvas.before:
-                #     Color:
-                #         rgba: self.background_color
-                #     Rectangle:
-                #         size: self.size
-                #         pos: self.pos
 
 <FourthWindow>:
     name: 'fourth'
@@ -176,10 +165,25 @@ WindowManager:
             on_release:
                 app.root.current = 'second'
                 root.manager.transition.direction = 'right'
-
+        Button:
+            text: "Time Domain Features"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: "Frequency Domain Features"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'left'
+        Button:
+            text: "Time-Frequency Domain Features"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'left'
 
 <FifthWindow>:
     name: 'fifth'
+    filename: filename
     GridLayout:
         cols:1
         size: root.width, root.height
@@ -190,6 +194,18 @@ WindowManager:
             on_release:
                 app.root.current = 'second'
                 root.manager.transition.direction = 'right'
+                filename.text = ""
+                tristimulus.source = ""
+
+        TextInput:
+            id: filename
+        Button:
+            text: "VIEW"
+            on_release: root.view()
+        Image:
+            id: tristimulus
+            source: ""
+
 
 <SixthWindow>:
     name: 'sixth'
@@ -203,3 +219,455 @@ WindowManager:
             on_release:
                 app.root.current = 'second'
                 root.manager.transition.direction = 'right'
+                filename.text = ""
+                power.source = ""
+
+        TextInput:
+            id: filename
+        Button:
+            text: "VIEW"
+            on_release: root.view()
+        Image:
+            id: power
+            source: ""
+
+<SeventhWindow>:
+    name: 'seventh'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        Button:
+            text: "CALCULATE"
+            on_release: root.timedomain()
+
+        GridLayout:
+            cols:3
+            spacing: 10
+            padding: 30
+            Label:
+                text: "Zero Crossing Rate: "
+            Label:
+                id: mean_zcr
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'tenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Energy: "
+            Label:
+                id: e
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'eleventh'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Root Mean Sqaure Error: "
+            Label:
+                id: mean_rmse
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twelveth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Beats Per Minute: "
+            Label:
+                id: tempo
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'thirteenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Harmonic & Percussive Signals: "
+            Label:
+                id: hpsignal
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'fourteenth'
+                    root.manager.transition.direction = 'left'
+
+<TenthWindow>:
+    name: 'tenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+
+        Image:
+            source: 'zcr.png'
+
+
+<EleventhWindow>:
+    name: 'eleventh'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'zcr.png'
+
+
+<TwelvethWindow>:
+    name: 'twelveth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'rmse.png'
+
+<ThirteenthWindow>:
+    name: 'thirteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'tempo.png'
+
+<FourteenthWindow>:
+    name: 'fourteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'hpsignal.png'
+
+
+<EighthWindow>:
+    name: 'eighth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        Button:
+            text: "CALCULATE"
+            on_release: root.frequencydomain()
+        GridLayout:
+            cols:3
+            spacing: 10
+            padding: 30
+            Label:
+                text: "Spectral Centroid: "
+            Label:
+                id: centroid
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'fifteenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Spectral Bandwidth: "
+            Label:
+                id: bandwidth
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'sixteenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Spectral Rolloff: "
+            Label:
+                id: rolloff
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'seventeenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Spectral Flux: "
+            Label:
+                id: flux
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'eightteenth'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Spectral Contrast: "
+            Label:
+                id: contrast
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'nineteenth'
+                    root.manager.transition.direction = 'left'
+
+<FifteenthWindow>:
+    name: 'fifteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'centroid.png'
+
+<SixteenthWindow>:
+    name: 'sixteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'bandwidth.png'
+
+<SeventeenthWindow>:
+    name: 'seventeenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'rolloff.png'
+
+<EighteenthWindow>:
+    name: 'eightteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'flux.png'
+
+<NineteenthWindow>:
+    name: 'nineteenth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'contrast.png'
+
+<NinethWindow>:
+    name: 'nineth'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        Button:
+            text: "CALCULATE"
+            on_release: root.timefrequencydomain()
+
+        GridLayout:
+            cols:3
+            spacing: 10
+            padding: 30
+            Label:
+                text: "Spectrogram"
+            Label:
+                id: spectrogram
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twenty'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Mel Spectrogram"
+            Label:
+                id: melspectrogram
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentyone'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "MFCC"
+            Label:
+                id: mfcc
+                text: ""
+                multiline:True
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentytwo'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Chroma Features"
+            Label:
+                id: chromafeatures
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentythree'
+                    root.manager.transition.direction = 'left'
+            Label:
+                text: "Pitch Hostogram"
+            Label:
+                id: pitchhistogram
+                text: ""
+            Button:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentyfour'
+                    root.manager.transition.direction = 'left'
+
+<TwentythWindow>:
+    name: 'twenty'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'spectrogram.png'
+
+<TwentyfirstWindow>:
+    name: 'twentyone'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'mel.png'
+
+<TwentysecondWindow>:
+    name: 'twentytwo'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'mfcc.png'
+<TwentythirdWindow>:
+    name: 'twentythree'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'chroma.png'
+
+<TwentyfourthWindow>:
+    name: 'twentyfour'
+    GridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        Button:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            source: 'pitchhistogram.png'

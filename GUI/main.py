@@ -9,7 +9,11 @@ import matplotlib.pyplot as plt
 import librosa, librosa.display
 import IPython.display as ipd
 import numpy as np
+import pandas as pd
+import seaborn as sns
+import sklearn
 import crepe
+import signal
 from pyrsistent import v
 from sklearn import preprocessing
 from scipy.io import wavfile
@@ -21,12 +25,15 @@ from kivy.uix.label import Label
 # from kivy.uix.textinput import TextInput
 # from kivy.uix.button import Button
 from kivy.uix.widget import Widget
+# from kivy.uix.floatlayout import FloatLayout
+# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 #Define our different screens
+
 class FirstWindow(Screen):
     tonic = ObjectProperty()
     type = ObjectProperty()
@@ -35,9 +42,8 @@ class FirstWindow(Screen):
         tonic = self.tonic.text
         type = self.type.text
         audio = pyaudio.PyAudio()
-        stream = audio.open(format = pyaudio.paInt16, channels=1, rate = 44100, input=True, frames_per_buffer=1024)
+        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
         print("Started recording")
-        # print("Press CTRL+C to stop recording")
         frames = []
         try:
             while True:
@@ -47,12 +53,15 @@ class FirstWindow(Screen):
             print("Done recording")
         except Exception as e:
             print(str(e))
+
         stream.stop_stream()
         stream.close()
         audio.terminate()
         print("Finished Recording")
+
         folder_name = type+'_'+str(tonic)
         name=type+'_'+str(tonic)+'.wav'
+
         print(name)
         sound_file = wave.open(name,"wb")
         sound_file.setnchannels(1)
@@ -60,15 +69,16 @@ class FirstWindow(Screen):
         sound_file.setframerate(44100)
         sound_file.writeframes(b''.join(frames))
         sound_file.close()
+
         print("Done")
         os.rename(name, f'AudioRecord/{name}')
+
         self.tonic.text = ""
         self.type.text =""
 
 
     def stoprecord(self):
-        pass
-
+        signal.CTRL_C_EVENT
 
     def saverecord(self):
         tonic = self.tonic.text
@@ -169,8 +179,7 @@ class FirstWindow(Screen):
             f = np.linspace(0, sr, len(power_spectrum))
             f_bins=limitFreq(f,2000)
             newX_mag=remove_till_limit(power_spectrum,1000,f_bins)
-            pitch=round(pitchEstimator(path))
-            Pitch.append(pitch)
+            pitch=Pitch[i-1]
             Harmonics=[]
             l=[1]
             totalSplit=int(round(2000/pitch))
@@ -181,7 +190,30 @@ class FirstWindow(Screen):
             Harmonics = [i for i in Harmonics if i != 0]
             midBand = sum(Harmonics[1:4])/sum(Harmonics)
             highBand = sum(Harmonics[4:])/sum(Harmonics)
+            # plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
             return [midBand,highBand]
+
+        def plot_power_spectrum(path,voice,i):
+            X = np.fft.fft(voice)
+            X_mag = np.absolute(X)
+            power_spectrum = np.square(X_mag)
+            f = np.linspace(0, sr, len(power_spectrum))
+            f_bins=limitFreq(f,2000)
+            pitch=round(pitchEstimator(path))
+            Pitch.append(pitch)
+            plt.subplot(3,6,i)
+            plt.plot(f[1:f_bins], power_spectrum[1:f_bins])
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Power')
+            plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
+
+        plt.figure(figsize=(25, 15))
+        for j in range(len(sar)):
+            plot_power_spectrum(sar[j],voice[j],j+1)
+        plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+        plt.savefig('power_spectrum'+folder_name)
+        plt.clf()
+
         coordinates = []
         for j in range(len(sar)):
             coordinates.append(findCoordinates(sar[j],voice[j],j+1))
@@ -225,6 +257,35 @@ class FirstWindow(Screen):
         data[base] = dictionary
         with open(filename, "w") as file:
             json.dump(data, file)
+
+        data = np.array(coordinates)
+        y, x = data.T
+        # n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
+
+        plt.figure(figsize=(25, 15))
+        plt.rcParams['font.size'] = '10'
+
+        triA1 = [ 0, 0.1, 0, 0 ]
+        triA2 = [ 0, 0, 0.1, 0 ]
+        triB1 = [ 0, 0.1, 0, 0 ]
+        triB2 = [ 0.9, 0.9, 1, 0.9]
+        triC1 = [ 0.8,  0.8, 1.0, 0.8 ]
+        triC2 = [ 0, 0.2, 0, 0 ]
+        plt.fill(triA1, triA2, color='#BABABA')
+        plt.fill(triB1, triB2, color='#BABABA')
+        plt.fill(triC1, triC2, color='#BABABA')
+
+        plt.scatter(x, y,s=50)
+        plt.xlabel('Power in High Band',fontsize=18)
+        plt.ylabel('Power in Mid Band',fontsize=18)
+        plt.plot([1,0],[0,1], 'k-',linewidth=1)
+        plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
+        plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
+        plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
+        plt.xlim(0,1)
+        plt.ylim(0,1)
+        plt.savefig('tristimulus'+folder_name)
+        plt.clf()
 
 class SecondWindow(Screen):
     pass
@@ -325,7 +386,6 @@ class ThirdWindow(Screen):
                 tonic_range1 =  data[c]["tonic"]
                 tonic_range2 =  data[d]["tonic"]
 
-        print(self.ids.tonicrange.text)
         self.ids.tonicrange.text = f'{tonic_range1} Hz - {tonic_range2} Hz'
         self.ids.lowestnote.text = f'{lowest_note} Hz'
         self.ids.highestnote.text = f'{highest_note} Hz'
@@ -352,20 +412,287 @@ class ThirdWindow(Screen):
         # print("*****************************")
 
 
-
-
 class FourthWindow(Screen):
     pass
+
+
 class FifthWindow(Screen):
-    pass
+    filename = ObjectProperty()
+    tristimulus = ObjectProperty()
+    def view(self):
+        name = self.ids.filename.text
+        if name:
+            self.ids.tristimulus.source = name+'.png'
+
+
 class SixthWindow(Screen):
+    filename = ObjectProperty()
+    power = ObjectProperty()
+    def view(self):
+        name = self.ids.filename.text
+        if name:
+            self.ids.power.source = name+'.png'
+
+
+class SeventhWindow(Screen):
+
+    def timedomain(self):
+        BASE_FOLDER = "./AudioFiles"
+        sound_file = "Aroh_120.wav"
+
+        # load sounds
+        voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
+
+        frame_length = 1024
+        hop_length = 512
+        # Zcr
+        zcr = librosa.feature.zero_crossing_rate(voice, frame_length=frame_length, hop_length=hop_length, center=True)[0]
+        mean_zcr = np.mean(zcr)
+
+        frames = range(len(zcr))
+        t = librosa.frames_to_time(frames, sr=sr, hop_length=hop_length)
+
+        librosa.display.waveplot(voice, alpha=0.5)
+        plt.plot(t, zcr, color="black")
+        plt.title("ZCR")
+        plt.savefig("zcr")
+        plt.clf()
+
+        # Energy
+
+        e = np.sum(voice**2)
+
+        # RMSE
+        rmse = librosa.feature.rms(voice, frame_length=frame_length, hop_length=hop_length, center=True)[0]
+        mean_rmse = np.mean(rmse)
+        plt.plot(t, rmse, color="black")
+        plt.title("RMSE")
+        plt.savefig("rmse")
+        plt. clf()
+
+        # Beats Per Minute
+        tempo, beat_frames = librosa.beat.beat_track(voice, sr=sr)
+        beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+        beat_time_diff = np.ediff1d(beat_times)
+        beat_nums = np.arange(1, np.size(beat_times))
+        fig, ax = plt.subplots()
+        fig.set_size_inches(15, 5)
+        ax.set_ylabel("Time difference (s)")
+        ax.set_xlabel("Beats")
+        g = sns.barplot(beat_nums, beat_time_diff, palette="rocket",ax=ax)
+        g = g.set(xticklabels=[])
+        plt.savefig('tempo')
+        plt. clf()
+
+        y_harmonic, y_percussive = librosa.effects.hpss(voice)
+        plt.figure(figsize=(15, 5))
+        librosa.display.waveplot(y_harmonic, sr=sr, alpha=0.25)
+        librosa.display.waveplot(y_percussive, sr=sr, color='red', alpha=0.5)
+        plt.title('Harmonic + Percussive')
+        plt.savefig('hpsignal')
+        plt. clf()
+
+
+        self.ids.mean_zcr.text = f'{mean_zcr}'
+        self.ids.e.text = f'{e}'
+        self.ids.mean_rmse.text = f'{mean_rmse}'
+        self.ids.tempo.text = f'{tempo} BPM'
+
+
+class TenthWindow(Screen):
     pass
+
+class EleventhWindow(Screen):
+    pass
+
+class TwelvethWindow(Screen):
+    pass
+
+class ThirteenthWindow(Screen):
+    pass
+
+class FourteenthWindow(Screen):
+    pass
+
+class EighthWindow(Screen):
+    def frequencydomain(self):
+
+        def normalize(x, axis=0):
+            return sklearn.preprocessing.minmax_scale(x, axis=axis)
+
+        BASE_FOLDER = "./AudioFiles"
+        sound_file = "Aroh_120.wav"
+
+        # load sounds
+        voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
+
+        frame_length = 1024
+        hop_length = 512
+        spectral_centroids = librosa.feature.spectral_centroid(voice, sr=sr, n_fft=frame_length, hop_length=hop_length)[0]
+        mean_spectral_centroids = np.mean(spectral_centroids)
+
+        spectral_bandwidth = librosa.feature.spectral_bandwidth(voice, sr = sr, n_fft=frame_length, hop_length=hop_length)[0]
+        mean_spectral_bandwidth = np.mean(spectral_bandwidth)
+
+        spectral_rolloff = librosa.feature.spectral_rolloff(voice, sr = sr, n_fft=frame_length, hop_length=hop_length)[0]
+        mean_spectral_rolloff = np.mean(spectral_rolloff)
+
+        spectral_flux = librosa.onset.onset_strength(voice, sr=sr)
+        mean_spectral_flux = np.mean(spectral_flux)
+
+        spectral_contrast=librosa.feature.spectral_contrast(voice,sr=sr, n_fft=frame_length, hop_length=hop_length)[0]
+        mean_spectral_contrast = np.mean(spectral_contrast)
+
+        frames = range(len(spectral_centroids))
+        f_times = librosa.frames_to_time(frames, hop_length=hop_length)
+        plt.figure(figsize=(20,5))
+        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        plt.plot(f_times, normalize(spectral_centroids), color='black', label='spectral centroids')
+        plt.xlabel('Time')
+        plt.title("Spectral Centroid")
+        plt.savefig('centroid')
+        plt.clf()
+        plt.figure(figsize=(20,5))
+        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        plt.plot(f_times, normalize(spectral_bandwidth), color='black', label='spectral bandwidth')
+        plt.xlabel('Time')
+        plt.title("Spectral Bandwidth")
+        plt.savefig('bandwidth')
+        plt.clf()
+        plt.figure(figsize=(20,5))
+        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        plt.plot(f_times, normalize(spectral_rolloff), color='black', label='spectral rolloff')
+        plt.xlabel('Time')
+        plt.title("Spectral rolloff")
+        plt.savefig('rolloff')
+        plt.clf()
+        plt.figure(figsize=(20,5))
+        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        plt.plot(f_times, normalize(spectral_flux), color='black', label='spectral flux')
+        plt.xlabel('Time')
+        plt.title("Spectral flux")
+        plt.savefig('flux')
+        plt.clf()
+        plt.figure(figsize=(20,5))
+        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        plt.plot(f_times, normalize(spectral_contrast), color='black', label='spectral flux')
+        plt.xlabel('Time')
+        plt.title("Spectral Contrast")
+        plt.savefig('contrast')
+        plt.clf()
+
+        self.ids.centroid.text = f'{mean_spectral_centroids}'
+        self.ids.bandwidth.text = f'{mean_spectral_bandwidth}'
+        self.ids.rolloff.text = f'{mean_spectral_rolloff}'
+        self.ids.flux.text = f'{mean_spectral_flux}'
+        self.ids.contrast.text = f'{mean_spectral_contrast}'
+
+class FifteenthWindow(Screen):
+    pass
+
+class SixteenthWindow(Screen):
+    pass
+
+class SeventeenthWindow(Screen):
+    pass
+
+class EighteenthWindow(Screen):
+    pass
+
+class NineteenthWindow(Screen):
+    pass
+
+
+class NinethWindow(Screen):
+
+    def timefrequencydomain(self):
+        BASE_FOLDER = "./AudioFiles"
+        sound_file = "Aroh_120.wav"
+        # load sounds
+        voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
+
+        frame_length = 1024
+        hop_length = 512
+        number_of_mfcc = 13
+        y_harmonic, y_percussive = librosa.effects.hpss(voice)
+
+        d_audio = np.abs(librosa.stft(voice, n_fft=frame_length, hop_length=hop_length))
+        db_audio = librosa.amplitude_to_db(d_audio, ref=np.max)
+        spectrogram = np.mean(db_audio[0])
+
+        plt.figure(figsize=(20, 5))
+        librosa.display.specshow(db_audio, sr=sr, hop_length=hop_length, x_axis="time", y_axis="linear")
+        plt.colorbar(format="%+2.f")
+        plt.savefig('spectrogram')
+        plt.clf()
+
+        s_audio = librosa.feature.melspectrogram(voice, sr=sr)
+        s_db_audio = librosa.amplitude_to_db(s_audio, ref=np.max)
+        mel_spectrogram = np.mean(s_db_audio[0])
+
+        plt.figure(figsize=(25, 5))
+        librosa.display.specshow(s_db_audio, x_axis="time",y_axis="mel", sr=sr)
+        plt.colorbar(format="%+2.f")
+        plt.savefig('mel')
+        plt.clf()
+
+        mfccs = librosa.feature.mfcc(voice, sr=sr, n_mfcc=number_of_mfcc)
+        plt.figure(figsize=(25, 5))
+        librosa.display.specshow(mfccs, sr=sr, x_axis='time')
+        plt.colorbar(format="%+2.f")
+        plt.savefig('mfcc')
+        plt.clf()
+
+        chroma = librosa.feature.chroma_cens(y=y_harmonic, sr=sr)
+        plt.figure(figsize=(25, 5))
+        librosa.display.specshow(chroma,y_axis='chroma', x_axis='time')
+        plt.colorbar()
+        plt.savefig('chroma')
+        plt.clf()
+
+        chroma_mean = np.mean(chroma,axis=1)
+        chroma_std = np.std(chroma,axis=1)
+        octave = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+        plt.figure(figsize = (25,5))
+        plt.title('Mean CENS')
+        sns.barplot(x=octave,y=chroma_mean)
+        plt.savefig('pitchhistogram')
+        plt.clf()
+
+
+        # mfcc_features = []
+        # for i in range(0, number_of_mfcc):
+        #     mfcc_value = np.mean(mfccs[i])
+        #     mfcc_features.append(mfcc_value)
+
+        self.ids.spectrogram.text = f'{spectrogram}'
+        self.ids.melspectrogram.text = f'{mel_spectrogram}'
+        # self.ids.mfcc.text = f'{mfcc_features}'
+        # self.ids.chromafeatures.text = f'{mean_spectral_flux}'
+
+
+class TwentythWindow(Screen):
+    pass
+
+class TwentyfirstWindow(Screen):
+    pass
+
+class TwentysecondWindow(Screen):
+    pass
+
+class TwentythirdWindow(Screen):
+    pass
+
+class TwentyfourthWindow(Screen):
+    pass
+
 class WindowManager(ScreenManager):
     pass
 
 kv = Builder.load_file('voiceanalysis.kv')
 
 class VoiceApp(App):
+
     def build(self):
 
         return kv
