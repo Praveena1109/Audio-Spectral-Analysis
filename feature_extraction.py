@@ -1,5 +1,4 @@
 import numpy as np                 # for handling large arrays
-import pandas as pd                # for data manipulation and analysis
 import scipy                       # for common math functions
 import sklearn                     # a machine learning library
 import os                          # for accessing local files
@@ -9,8 +8,8 @@ import matplotlib.pyplot as plt    # plotting with Matlab functionality
 import seaborn as sns              # data visualization based on matplotlib
 import librosa
 
-BASE_FOLDER = "/Users/Praveena Acharya/Desktop/Audio Spectral Analysis"
-sound_file = "Shashi_Tharoor.wav"
+BASE_FOLDER = "/Users/Praveena Acharya/Desktop/FINAL YEAR BE PROJECT/Audio Spectral Analysis"
+sound_file = "Aroh_120.wav"
 
 ipd.Audio(os.path.join(BASE_FOLDER, sound_file))
 
@@ -91,26 +90,6 @@ voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 # plt.show()
 
 
-
-# An estimate of the tempo in Beats Per Minute (BPM).
-# tempo = librosa.beat.tempo(voice)[0]
-# print(tempo)
-
-# Beat Extraction
-# tempo, beat_frames = librosa.beat.beat_track(voice, sr=sr)
-# print('Detected Tempo: '+ str(tempo) + ' beats/min')
-# beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-# beat_time_diff = np.ediff1d(beat_times)
-# beat_nums = np.arange(1, np.size(beat_times))
-# fig, ax = plt.subplots()
-# fig.set_size_inches(15, 5)
-# ax.set_ylabel("Time difference (s)")
-# ax.set_xlabel("Beats")
-# g = sns.barplot(beat_nums, beat_time_diff, palette="rocket",ax=ax)
-# g = g.set(xticklabels=[])
-# plt.show()
-
-
 # Spectral Features
 
 
@@ -175,17 +154,55 @@ voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 # print(mfccs)
 # print(len(mfccs))
 
+# # An estimate of the tempo in Beats Per Minute (BPM).
+# tempo = librosa.beat.tempo(voice)[0]
+# print(tempo)
+
+# Beat Extraction
+# tempo, beat_frames = librosa.beat.beat_track(voice, sr=sr)
+# print('Detected Tempo: '+ str(tempo) + ' beats/min')
+# beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+# beat_time_diff = np.ediff1d(beat_times)
+# beat_nums = np.arange(1, np.size(beat_times))
+# fig, ax = plt.subplots()
+# fig.set_size_inches(15, 5)
+# ax.set_ylabel("Time difference (s)")
+# ax.set_xlabel("Beats")
+# g = sns.barplot(beat_nums, beat_time_diff, palette="rocket",ax=ax)
+# g = g.set(xticklabels=[])
+# plt.show()
 
 # Tempogram
-# hop_length = 512
+hop_length = 512
 # tempogram = librosa.feature.tempogram(voice, sr=sr, hop_length=hop_length)
 # plt.figure(figsize=(12,8))
+# librosa.display.specshow(tempogram,x_axis='time', y_axis='tempo')
 # for i in range(1,14):
 #     plt.plot(tempogram[i], label=i)
 # plt.legend()
+# plt.axhline(tempo, color='w', linestyle='--', alpha=1,label='Estimated tempo={:g}'.format(tempo))
 # plt.title("Tempogram")
 # plt.show()
 
+# tempogram = librosa.feature.tempogram(voice, sr=sr, hop_length=hop_length)
+# tempo = librosa.beat.tempo(voice)[0]
+# librosa.display.specshow(tempogram,x_axis='time', y_axis='tempo')
+
+# plt.legend(frameon=True, framealpha=0.75)
+# plt.figure(figsize=(12,8))
+# plt.title("Tempogram")
+# plt.show()
+
+onset_env = librosa.onset.onset_strength(voice, sr=sr)
+tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr)[0]
+tempogram = librosa.feature.tempogram(onset_envelope=onset_env, sr=sr, hop_length=hop_length)
+librosa.display.specshow(tempogram,sr=sr, hop_length=hop_length,x_axis='time', y_axis='tempo')
+plt.axhline(tempo, color='w', linestyle='--', alpha=1,label='Estimated tempo={:g}'.format(tempo))
+print(tempo)
+# plt.legend()
+plt.title("Tempogram")
+# plt.show()
+plt.savefig('new1')
 
 # Ployfeatures
 # poly_features=librosa.feature.poly_features(voice) #order 1 by default

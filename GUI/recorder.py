@@ -14,7 +14,7 @@ class Recorder(object):
     def open(self, fname, mode='wb'):
         return RecordingFile(fname, mode, self.channels, self.rate,
                             self.frames_per_buffer)
-
+ 
 class RecordingFile(object):
     def __init__(self, fname, mode, channels,
                 rate, frames_per_buffer):

@@ -9,7 +9,7 @@ WindowManager:
     EighthWindow:
     NinethWindow:
     TenthWindow:
-    EleventhWindow:
+    # EleventhWindow:
     TwelvethWindow:
     ThirteenthWindow:
     FourteenthWindow:
@@ -62,7 +62,6 @@ WindowManager:
                 text: "STOP"
                 on_press:
                     root.stoprecord()
-
             Button:
                 text: "SAVE"
                 on_release: root.saverecord()
@@ -71,6 +70,7 @@ WindowManager:
                 on_release:
                     app.root.current = 'second'
                     root.manager.transition.direction = 'left'
+
 
 <SecondWindow>:
     name: 'second'
@@ -105,6 +105,7 @@ WindowManager:
                 app.root.current = 'sixth'
                 root.manager.transition.direction = 'left'
 
+
 <ThirdWindow>:
     name: 'third'
     GridLayout:
@@ -120,7 +121,6 @@ WindowManager:
         Button:
             text: "ANALYSE"
             on_press: root.analyserange()
-
         GridLayout:
             cols:2
             spacing: 10
@@ -152,6 +152,7 @@ WindowManager:
             Label:
                 id: keyboardkey
                 text: ""
+
 
 <FourthWindow>:
     name: 'fourth'
@@ -196,7 +197,6 @@ WindowManager:
                 root.manager.transition.direction = 'right'
                 filename.text = ""
                 tristimulus.source = ""
-
         TextInput:
             id: filename
         Button:
@@ -221,7 +221,6 @@ WindowManager:
                 root.manager.transition.direction = 'right'
                 filename.text = ""
                 power.source = ""
-
         TextInput:
             id: filename
         Button:
@@ -230,6 +229,7 @@ WindowManager:
         Image:
             id: power
             source: ""
+
 
 <SeventhWindow>:
     name: 'seventh'
@@ -243,10 +243,11 @@ WindowManager:
             on_release:
                 app.root.current = 'fourth'
                 root.manager.transition.direction = 'right'
+        TextInput:
+            id: tdfilename
         Button:
             text: "CALCULATE"
             on_release: root.timedomain()
-
         GridLayout:
             cols:3
             spacing: 10
@@ -261,18 +262,18 @@ WindowManager:
                 on_release:
                     app.root.current = 'tenth'
                     root.manager.transition.direction = 'left'
+            # Label:
+            #     text: "Energy: "
+            # Label:
+            #     id: e
+            #     text: ""
+            # Button:
+            #     text: "View"
+            #     on_release:
+            #         app.root.current = 'eleventh'
+            #         root.manager.transition.direction = 'left'
             Label:
-                text: "Energy: "
-            Label:
-                id: e
-                text: ""
-            Button:
-                text: "View"
-                on_release:
-                    app.root.current = 'eleventh'
-                    root.manager.transition.direction = 'left'
-            Label:
-                text: "Root Mean Sqaure Error: "
+                text: "Root Mean Sqaure Energy: "
             Label:
                 id: mean_rmse
                 text: ""
@@ -282,7 +283,7 @@ WindowManager:
                     app.root.current = 'twelveth'
                     root.manager.transition.direction = 'left'
             Label:
-                text: "Beats Per Minute: "
+                text: "Tempo: "
             Label:
                 id: tempo
                 text: ""
@@ -314,25 +315,25 @@ WindowManager:
             on_release:
                 app.root.current = 'seventh'
                 root.manager.transition.direction = 'right'
-
         Image:
-            source: 'zcr.png'
+            id: zcr_source
+            source: ''
 
 
-<EleventhWindow>:
-    name: 'eleventh'
-    GridLayout:
-        cols:1
-        size: root.width, root.height
-        spacing: 20
-        padding:50
-        Button:
-            text: "BACK"
-            on_release:
-                app.root.current = 'seventh'
-                root.manager.transition.direction = 'right'
-        Image:
-            source: 'zcr.png'
+# <EleventhWindow>:
+#     name: 'eleventh'
+#     GridLayout:
+#         cols:1
+#         size: root.width, root.height
+#         spacing: 20
+#         padding:50
+#         Button:
+#             text: "BACK"
+#             on_release:
+#                 app.root.current = 'seventh'
+#                 root.manager.transition.direction = 'right'
+#         Image:
+#             source: 'zcr.png'
 
 
 <TwelvethWindow>:
@@ -348,7 +349,8 @@ WindowManager:
                 app.root.current = 'seventh'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'rmse.png'
+            id: rmse_source
+            source: ''
 
 <ThirteenthWindow>:
     name: 'thirteenth'
@@ -363,7 +365,8 @@ WindowManager:
                 app.root.current = 'seventh'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'tempo.png'
+            id: tempo_source
+            source: ''
 
 <FourteenthWindow>:
     name: 'fourteenth'
@@ -378,7 +381,8 @@ WindowManager:
                 app.root.current = 'seventh'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'hpsignal.png'
+            id: hpsignal_source
+            source: ''
 
 
 <EighthWindow>:
@@ -393,6 +397,8 @@ WindowManager:
             on_release:
                 app.root.current = 'fourth'
                 root.manager.transition.direction = 'right'
+        TextInput:
+            id: fdfilename
         Button:
             text: "CALCULATE"
             on_release: root.frequencydomain()
@@ -464,7 +470,8 @@ WindowManager:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'centroid.png'
+            id: centroid_source
+            source: ''
 
 <SixteenthWindow>:
     name: 'sixteenth'
@@ -479,7 +486,8 @@ WindowManager:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'bandwidth.png'
+            id: bandwidth_source
+            source: ''
 
 <SeventeenthWindow>:
     name: 'seventeenth'
@@ -494,7 +502,8 @@ WindowManager:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'rolloff.png'
+            id: rolloff_source
+            source: ''
 
 <EighteenthWindow>:
     name: 'eightteenth'
@@ -509,7 +518,8 @@ WindowManager:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'flux.png'
+            id: flux_source
+            source: ''
 
 <NineteenthWindow>:
     name: 'nineteenth'
@@ -524,7 +534,8 @@ WindowManager:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'contrast.png'
+            id: contrast_source
+            source: ''
 
 <NinethWindow>:
     name: 'nineth'
@@ -538,6 +549,8 @@ WindowManager:
             on_release:
                 app.root.current = 'fourth'
                 root.manager.transition.direction = 'right'
+        TextInput:
+            id: tfdfilename
         Button:
             text: "CALCULATE"
             on_release: root.timefrequencydomain()
@@ -611,7 +624,8 @@ WindowManager:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'spectrogram.png'
+            id: spectrogram_source
+            source: ''
 
 <TwentyfirstWindow>:
     name: 'twentyone'
@@ -626,7 +640,8 @@ WindowManager:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'mel.png'
+            id: mel_source
+            source: ''
 
 <TwentysecondWindow>:
     name: 'twentytwo'
@@ -641,7 +656,8 @@ WindowManager:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'mfcc.png'
+            id: mfcc_source
+            source: ''
 <TwentythirdWindow>:
     name: 'twentythree'
     GridLayout:
@@ -655,7 +671,8 @@ WindowManager:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'chroma.png'
+            id: chroma_source
+            source: ''
 
 <TwentyfourthWindow>:
     name: 'twentyfour'
@@ -670,4 +687,5 @@ WindowManager:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'right'
         Image:
-            source: 'pitchhistogram.png'
+            id: pitchhistogram_source
+            source: ''

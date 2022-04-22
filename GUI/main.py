@@ -1,3 +1,5 @@
+# IMPORTS
+
 import kivy
 import pyaudio
 import wave
@@ -18,67 +20,48 @@ from pyrsistent import v
 from sklearn import preprocessing
 from scipy.io import wavfile
 import warnings
+import recorder
 import json
 from kivy.app import App
 from kivy.uix.label import Label
-# from kivy.uix.gridlayout import GridLayout
-# from kivy.uix.textinput import TextInput
-# from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-# from kivy.uix.floatlayout import FloatLayout
-# from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 
-#Define our different screens
+# DEFINED WINDOWS
+
+# FIRST WINDOW - RECORDING AND SAVING
 
 class FirstWindow(Screen):
-    tonic = ObjectProperty()
-    type = ObjectProperty()
-
     def startrecord(self):
-        tonic = self.tonic.text
-        type = self.type.text
-        audio = pyaudio.PyAudio()
-        stream = audio.open(format=pyaudio.paInt16, channels=1, rate=44100, input=True, frames_per_buffer=1024)
-        print("Started recording")
-        frames = []
-        try:
-            while True:
-                data = stream.read(1024)
-                frames.append(data)
-        except KeyboardInterrupt:
-            print("Done recording")
-        except Exception as e:
-            print(str(e))
-
-        stream.stop_stream()
-        stream.close()
-        audio.terminate()
-        print("Finished Recording")
-
+        rec = recorder.Recorder(channels=2)
+        global running
+        running = None
+        tonic = self.ids.tonic.text
+        type = self.ids.type.text
         folder_name = type+'_'+str(tonic)
         name=type+'_'+str(tonic)+'.wav'
-
-        print(name)
-        sound_file = wave.open(name,"wb")
-        sound_file.setnchannels(1)
-        sound_file.setsampwidth(audio.get_sample_size(pyaudio.paInt16))
-        sound_file.setframerate(44100)
-        sound_file.writeframes(b''.join(frames))
-        sound_file.close()
-
-        print("Done")
-        os.rename(name, f'AudioRecord/{name}')
-
-        self.tonic.text = ""
-        self.type.text =""
-
+        if running is not None:
+            print('already running')
+        else:
+            running = rec.open(name, 'wb')
+            running.start_recording()
 
     def stoprecord(self):
-        signal.CTRL_C_EVENT
+        global running
+        tonic = self.ids.tonic.text
+        type = self.ids.type.text
+        folder_name = type+'_'+str(tonic)
+        name=type+'_'+str(tonic)+'.wav'
+        if running is not None:
+            running.stop_recording()
+            running.close()
+            running = None
+        else:
+            print('not running')
+        os.rename(name, f'AudioRecord/{name}')
 
     def saverecord(self):
         tonic = self.tonic.text
@@ -207,13 +190,15 @@ class FirstWindow(Screen):
             plt.ylabel('Power')
             plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
 
+        # PLOTTING POWER SPECTRUM AND SAVING THEM.
         plt.figure(figsize=(25, 15))
         for j in range(len(sar)):
             plot_power_spectrum(sar[j],voice[j],j+1)
         plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-        plt.savefig('power_spectrum'+folder_name)
+        plt.savefig('pow'+folder_name)
         plt.clf()
 
+        # FINDING MIDBAND & HIGHBAND
         coordinates = []
         for j in range(len(sar)):
             coordinates.append(findCoordinates(sar[j],voice[j],j+1))
@@ -226,10 +211,10 @@ class FirstWindow(Screen):
             if (0.1<=coordinate[1]<= 0.5) and (0.2<=coordinate[0]<=0.7):
                 central_count+=1
 
+        # DUMPING VALUES TO JSON
         filename = 'output1.json'
         if type =="Aroh":
             dictionary ={
-
                 "tonic" : Pitch[0],
                 "highest": [max(Pitch)],
                 # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
@@ -239,7 +224,6 @@ class FirstWindow(Screen):
             }
         else:
             dictionary ={
-
                 "tonic" : Pitch[-1],
                 "lowest": [min(Pitch)],
                 # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
@@ -247,7 +231,6 @@ class FirstWindow(Screen):
                 "grey_count" : grey_count,
                 "central_count" : central_count
             }
-
         with open(filename, "r") as file:
             data = json.loads(file.read())
         try:
@@ -258,13 +241,12 @@ class FirstWindow(Screen):
         with open(filename, "w") as file:
             json.dump(data, file)
 
+        # PLOTTING TRISTIMULUS DIAGRAM
         data = np.array(coordinates)
         y, x = data.T
         # n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
-
         plt.figure(figsize=(25, 15))
         plt.rcParams['font.size'] = '10'
-
         triA1 = [ 0, 0.1, 0, 0 ]
         triA2 = [ 0, 0, 0.1, 0 ]
         triB1 = [ 0, 0.1, 0, 0 ]
@@ -274,7 +256,6 @@ class FirstWindow(Screen):
         plt.fill(triA1, triA2, color='#BABABA')
         plt.fill(triB1, triB2, color='#BABABA')
         plt.fill(triC1, triC2, color='#BABABA')
-
         plt.scatter(x, y,s=50)
         plt.xlabel('Power in High Band',fontsize=18)
         plt.ylabel('Power in Mid Band',fontsize=18)
@@ -284,16 +265,22 @@ class FirstWindow(Screen):
         plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
         plt.xlim(0,1)
         plt.ylim(0,1)
-        plt.savefig('tristimulus'+folder_name)
+        plt.savefig('tri'+folder_name)
         plt.clf()
 
+        self.ids.tonic.text = ""
+        self.ids.type.text =""
+
+
+# SECOND WINDOW - PROGRAM OPTIONS
 class SecondWindow(Screen):
     pass
 
 
+# THIRD WINDOW - ANALYSE TONIC NOTE AND RANGE
 class ThirdWindow(Screen):
-    def analyserange(self):
 
+    def analyserange(self):
         keyboard_keys = {
             82.40689 : "E2",
             87.30706 : "F2",
@@ -320,16 +307,13 @@ class ThirdWindow(Screen):
         }
 
         f = open('output1.json')
-
         data = json.load(f)
-
         a = "./AudioFiles/Aroh_120"
         b = "./AudioFiles/Avaroh_120"
         c = "./AudioFiles/Aroh_130"
         d = "./AudioFiles/Avaroh_130"
         e = "./AudioFiles/Aroh_140"
         f = "./AudioFiles/Avaroh_140"
-
         first_grey = data[a]["grey_count"] + data[b]["grey_count"]
         second_grey = data[c]["grey_count"] + data[d]["grey_count"]
         third_grey = data[e]["grey_count"] + data[f]["grey_count"]
@@ -394,96 +378,78 @@ class ThirdWindow(Screen):
         closest_key = keys[min(range(len(keys)), key = lambda i: abs(keys[i]-tonic_range1))]
 
         self.ids.closestkey.text = f'{closest_key} Hz'
-
-        self.ids.keyboardkey.text = f'{keyboard_keys[closest_key]} Hz'
-
-
-        # print("****************************")
-        # print("TONIC RANGE: ", tonic_range1,"Hz","-", tonic_range2,"Hz")
-        # print()
-        # print("LOWEST NOTE: ",lowest_note,"Hz" )
-        # print()
-        # print("HIGHEST NOTE: ",highest_note,"Hz")
-        # print()
-        #
-        # print("CLOSEST KEY FREQUENCY: ",closest_key,"Hz" )
-        # print()
-        # print("KEYBOARD KEY: ",keyboard_keys[closest_key])
-        # print("*****************************")
+        self.ids.keyboardkey.text = f'{keyboard_keys[closest_key]}'
 
 
+# FOURTH WINDOW - FEATURES OPTIONS
 class FourthWindow(Screen):
     pass
 
-
+# FIFTH WINDOW - VIEW TRISTIMULUS DIAGRAM
 class FifthWindow(Screen):
     filename = ObjectProperty()
     tristimulus = ObjectProperty()
     def view(self):
         name = self.ids.filename.text
         if name:
-            self.ids.tristimulus.source = name+'.png'
+            self.ids.tristimulus.source = 'tri' + name+'.png'
 
-
+# SIXTH WINDOW - VIEW POWER SPRECTRUM DIAGRAM
 class SixthWindow(Screen):
     filename = ObjectProperty()
     power = ObjectProperty()
     def view(self):
         name = self.ids.filename.text
         if name:
-            self.ids.power.source = name+'.png'
+            self.ids.power.source = 'pow'+name+'.png'
 
-
+# SEVENTH WINDOW - TIME DOMAIN FEATURE ANALYSIS
 class SeventhWindow(Screen):
 
     def timedomain(self):
         BASE_FOLDER = "./AudioFiles"
-        sound_file = "Aroh_120.wav"
+        sound_file = self.ids.tdfilename.text + '.wav'
 
         # load sounds
         voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
-
         frame_length = 1024
         hop_length = 512
+
         # Zcr
         zcr = librosa.feature.zero_crossing_rate(voice, frame_length=frame_length, hop_length=hop_length, center=True)[0]
-        mean_zcr = np.mean(zcr)
-
+        mean_zcr = format(np.mean(zcr), '.3f')
         frames = range(len(zcr))
         t = librosa.frames_to_time(frames, sr=sr, hop_length=hop_length)
-
+        plt.figure(figsize=(25, 5))
         librosa.display.waveplot(voice, alpha=0.5)
         plt.plot(t, zcr, color="black")
         plt.title("ZCR")
         plt.savefig("zcr")
         plt.clf()
 
-        # Energy
-
-        e = np.sum(voice**2)
-
         # RMSE
         rmse = librosa.feature.rms(voice, frame_length=frame_length, hop_length=hop_length, center=True)[0]
-        mean_rmse = np.mean(rmse)
+        mean_rmse = format(np.mean(rmse), '.3f')
+        frames = range(len(rmse))
+        t = librosa.frames_to_time(frames, sr=sr, hop_length=hop_length)
         plt.plot(t, rmse, color="black")
         plt.title("RMSE")
         plt.savefig("rmse")
-        plt. clf()
+        plt.clf()
 
         # Beats Per Minute
-        tempo, beat_frames = librosa.beat.beat_track(voice, sr=sr)
-        beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-        beat_time_diff = np.ediff1d(beat_times)
-        beat_nums = np.arange(1, np.size(beat_times))
-        fig, ax = plt.subplots()
-        fig.set_size_inches(15, 5)
-        ax.set_ylabel("Time difference (s)")
-        ax.set_xlabel("Beats")
-        g = sns.barplot(beat_nums, beat_time_diff, palette="rocket",ax=ax)
-        g = g.set(xticklabels=[])
+        # Tempogram
+        onset_env = librosa.onset.onset_strength(voice, sr=sr)
+        tempo = librosa.beat.tempo(onset_envelope=onset_env, sr=sr)[0]
+        tempogram = librosa.feature.tempogram(onset_envelope=onset_env, sr=sr, hop_length=hop_length)
+        librosa.display.specshow(tempogram,sr=sr, hop_length=hop_length,x_axis='time', y_axis='tempo')
+        plt.axhline(tempo, color='w', linestyle='--', alpha=1,label='Estimated tempo={:g}'.format(tempo))
+        plt.title("Tempogram")
+        tempo = format(tempo,'.3f')
         plt.savefig('tempo')
-        plt. clf()
+        plt.clf()
 
+        # Harmonic & Percussive Signals
         y_harmonic, y_percussive = librosa.effects.hpss(voice)
         plt.figure(figsize=(15, 5))
         librosa.display.waveplot(y_harmonic, sr=sr, alpha=0.25)
@@ -492,56 +458,63 @@ class SeventhWindow(Screen):
         plt.savefig('hpsignal')
         plt. clf()
 
-
         self.ids.mean_zcr.text = f'{mean_zcr}'
-        self.ids.e.text = f'{e}'
         self.ids.mean_rmse.text = f'{mean_rmse}'
-        self.ids.tempo.text = f'{tempo} BPM'
+        self.ids.tempo.text = f'{tempo} Beats/min'
 
-
+# VIEW ZCR
 class TenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.zcr_source.source = 'zcr.png'
 
-class EleventhWindow(Screen):
-    pass
+# class EleventhWindow(Screen):
+#     pass
 
+# VIEW RMSE
 class TwelvethWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.rmse_source.source = 'rmse.png'
 
+# VIEW TEMPO
 class ThirteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.tempo_source.source = 'tempo.png'
 
+# VIEW HARMONIC & PERCUSSIVE SIGNALS
 class FourteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.hpsignal_source.source = 'hpsignal.png'
 
+# EIGHTH WINDOW - FREQUENCY DOMAIN ANALYSIS
 class EighthWindow(Screen):
+
     def frequencydomain(self):
 
         def normalize(x, axis=0):
             return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
         BASE_FOLDER = "./AudioFiles"
-        sound_file = "Aroh_120.wav"
+        sound_file = self.ids.fdfilename.text + '.wav'
 
         # load sounds
         voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
-
         frame_length = 1024
         hop_length = 512
+
         spectral_centroids = librosa.feature.spectral_centroid(voice, sr=sr, n_fft=frame_length, hop_length=hop_length)[0]
-        mean_spectral_centroids = np.mean(spectral_centroids)
+        mean_spectral_centroids = format(np.mean(spectral_centroids),'.3f')
 
         spectral_bandwidth = librosa.feature.spectral_bandwidth(voice, sr = sr, n_fft=frame_length, hop_length=hop_length)[0]
-        mean_spectral_bandwidth = np.mean(spectral_bandwidth)
+        mean_spectral_bandwidth = format(np.mean(spectral_bandwidth),'.3f')
 
         spectral_rolloff = librosa.feature.spectral_rolloff(voice, sr = sr, n_fft=frame_length, hop_length=hop_length)[0]
-        mean_spectral_rolloff = np.mean(spectral_rolloff)
+        mean_spectral_rolloff = format(np.mean(spectral_rolloff), '.3f')
 
         spectral_flux = librosa.onset.onset_strength(voice, sr=sr)
-        mean_spectral_flux = np.mean(spectral_flux)
+        mean_spectral_flux = format(np.mean(spectral_flux), '.3f')
 
         spectral_contrast=librosa.feature.spectral_contrast(voice,sr=sr, n_fft=frame_length, hop_length=hop_length)[0]
-        mean_spectral_contrast = np.mean(spectral_contrast)
+        mean_spectral_contrast = format(np.mean(spectral_contrast), '.3f')
 
         frames = range(len(spectral_centroids))
         f_times = librosa.frames_to_time(frames, hop_length=hop_length)
@@ -552,6 +525,7 @@ class EighthWindow(Screen):
         plt.title("Spectral Centroid")
         plt.savefig('centroid')
         plt.clf()
+
         plt.figure(figsize=(20,5))
         librosa.display.waveplot(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_bandwidth), color='black', label='spectral bandwidth')
@@ -559,6 +533,7 @@ class EighthWindow(Screen):
         plt.title("Spectral Bandwidth")
         plt.savefig('bandwidth')
         plt.clf()
+
         plt.figure(figsize=(20,5))
         librosa.display.waveplot(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_rolloff), color='black', label='spectral rolloff')
@@ -566,6 +541,7 @@ class EighthWindow(Screen):
         plt.title("Spectral rolloff")
         plt.savefig('rolloff')
         plt.clf()
+
         plt.figure(figsize=(20,5))
         librosa.display.waveplot(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_flux), color='black', label='spectral flux')
@@ -573,6 +549,7 @@ class EighthWindow(Screen):
         plt.title("Spectral flux")
         plt.savefig('flux')
         plt.clf()
+
         plt.figure(figsize=(20,5))
         librosa.display.waveplot(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_contrast), color='black', label='spectral flux')
@@ -587,38 +564,50 @@ class EighthWindow(Screen):
         self.ids.flux.text = f'{mean_spectral_flux}'
         self.ids.contrast.text = f'{mean_spectral_contrast}'
 
+# VIEW SPECTRAL CENTROID
 class FifteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.centroid_source.source = 'centroid.png'
 
+# VIEW SPECTRAL BANDWIDTH
 class SixteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.bandwidth_source.source = 'bandwidth.png'
 
+# VIEW SPECTRAL ROLLOFF
 class SeventeenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.rolloff_source.source = 'rolloff.png'
 
+# VIEW SPECTRAL FLUX
 class EighteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.flux_source.source = 'flux.png'
 
+# VIEW SPECTRAL CONTRAST
 class NineteenthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.contrast_source.source = 'contrast.png'
 
-
+# EIGHTH WINDOW - TIME-FREQUENCY DOMAIN ANALYSIS
 class NinethWindow(Screen):
 
     def timefrequencydomain(self):
-        BASE_FOLDER = "./AudioFiles"
-        sound_file = "Aroh_120.wav"
-        # load sounds
-        voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
 
+        BASE_FOLDER = "./AudioFiles"
+        sound_file = self.ids.tfdfilename.text + '.wav'
+        # load sounds
+
+        voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
         frame_length = 1024
         hop_length = 512
         number_of_mfcc = 13
+
         y_harmonic, y_percussive = librosa.effects.hpss(voice)
 
         d_audio = np.abs(librosa.stft(voice, n_fft=frame_length, hop_length=hop_length))
         db_audio = librosa.amplitude_to_db(d_audio, ref=np.max)
-        spectrogram = np.mean(db_audio[0])
+        spectrogram = format(np.mean(db_audio[0]),'.3f')
 
         plt.figure(figsize=(20, 5))
         librosa.display.specshow(db_audio, sr=sr, hop_length=hop_length, x_axis="time", y_axis="linear")
@@ -628,7 +617,7 @@ class NinethWindow(Screen):
 
         s_audio = librosa.feature.melspectrogram(voice, sr=sr)
         s_db_audio = librosa.amplitude_to_db(s_audio, ref=np.max)
-        mel_spectrogram = np.mean(s_db_audio[0])
+        mel_spectrogram = format(np.mean(s_db_audio[0]),'.3f')
 
         plt.figure(figsize=(25, 5))
         librosa.display.specshow(s_db_audio, x_axis="time",y_axis="mel", sr=sr)
@@ -659,7 +648,6 @@ class NinethWindow(Screen):
         plt.savefig('pitchhistogram')
         plt.clf()
 
-
         # mfcc_features = []
         # for i in range(0, number_of_mfcc):
         #     mfcc_value = np.mean(mfccs[i])
@@ -670,21 +658,30 @@ class NinethWindow(Screen):
         # self.ids.mfcc.text = f'{mfcc_features}'
         # self.ids.chromafeatures.text = f'{mean_spectral_flux}'
 
-
+# VIEW SPECTROGRAM
 class TwentythWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.spectrogram_source.source = 'spectrogram.png'
 
+# VIEW MEL-SPECTROGRAM
 class TwentyfirstWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.mel_source.source = 'mel.png'
 
+# VIEW MFCC
 class TwentysecondWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.mfcc_source.source = 'mfcc.png'
 
+# VIEW CHROMA FEATURES
 class TwentythirdWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.chroma_source.source = 'chroma.png'
 
+# VIEW PITCH HISTOGRAM
 class TwentyfourthWindow(Screen):
-    pass
+    def on_enter(self):
+        self.ids.pitchhistogram_source.source = 'pitchhistogram.png'
 
 class WindowManager(ScreenManager):
     pass
@@ -694,7 +691,7 @@ kv = Builder.load_file('voiceanalysis.kv')
 class VoiceApp(App):
 
     def build(self):
-
+        running = None
         return kv
 
 if __name__=='__main__':
