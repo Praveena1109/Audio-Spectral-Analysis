@@ -35,12 +35,30 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 # FIRST WINDOW - RECORDING AND SAVING
 
 class FirstWindow(Screen):
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             FirstWindow.tonic = selected
+        else:
+            FirstWindow.tonic = ""
+
+        print(FirstWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            FirstWindow.type = selected
+        else:
+            FirstWindow.type = ""
+        print(FirstWindow.type)
+
+
     def startrecord(self):
         rec = recorder.Recorder(channels=2)
         global running
         running = None
-        tonic = self.ids.tonic.text
-        type = self.ids.type.text
+        tonic = FirstWindow.tonic
+        type = FirstWindow.type
         folder_name = type+'_'+str(tonic)
         name=type+'_'+str(tonic)+'.wav'
         if running is not None:
@@ -51,8 +69,8 @@ class FirstWindow(Screen):
 
     def stoprecord(self):
         global running
-        tonic = self.ids.tonic.text
-        type = self.ids.type.text
+        tonic = FirstWindow.tonic
+        type = FirstWindow.type
         folder_name = type+'_'+str(tonic)
         name=type+'_'+str(tonic)+'.wav'
         if running is not None:
@@ -61,11 +79,13 @@ class FirstWindow(Screen):
             running = None
         else:
             print('not running')
+        if (os.path.exists(f'AudioRecord/{name}')):
+            os.remove(f'AudioRecord/{name}')
         os.rename(name, f'AudioRecord/{name}')
 
     def saverecord(self):
-        tonic = self.tonic.text
-        type = self.type.text
+        tonic = FirstWindow.tonic
+        type = FirstWindow.type
         folder_name = type+'_'+str(tonic)
         name=type+'_'+str(tonic)+'.wav'
         path = f'AudioFiles/{name}'
@@ -268,9 +288,6 @@ class FirstWindow(Screen):
         plt.savefig('tri'+folder_name)
         plt.clf()
 
-        self.ids.tonic.text = ""
-        self.ids.type.text =""
-
 
 # SECOND WINDOW - PROGRAM OPTIONS
 class SecondWindow(Screen):
@@ -387,28 +404,78 @@ class FourthWindow(Screen):
 
 # FIFTH WINDOW - VIEW TRISTIMULUS DIAGRAM
 class FifthWindow(Screen):
-    filename = ObjectProperty()
+    # filename = ObjectProperty()
     tristimulus = ObjectProperty()
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             FifthWindow.tonic = selected
+        else:
+            FifthWindow.tonic = ""
+
+        print(FifthWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            FifthWindow.type = selected
+        else:
+            FifthWindow.type = ""
+        print(FifthWindow.type)
+
     def view(self):
-        name = self.ids.filename.text
+        name = FifthWindow.type+FifthWindow.tonic
         if name:
             self.ids.tristimulus.source = 'tri' + name+'.png'
 
 # SIXTH WINDOW - VIEW POWER SPRECTRUM DIAGRAM
 class SixthWindow(Screen):
-    filename = ObjectProperty()
+    # filename = ObjectProperty()
     power = ObjectProperty()
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             SixthWindow.tonic = selected
+        else:
+            SixthWindow.tonic = ""
+
+        print(SixthWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            SixthWindow.type = selected
+        else:
+            SixthWindow.type = ""
+        print(SixthWindow.type)
+
     def view(self):
-        name = self.ids.filename.text
+        name = SixthWindow.type+SixthWindow.tonic
         if name:
             self.ids.power.source = 'pow'+name+'.png'
 
 # SEVENTH WINDOW - TIME DOMAIN FEATURE ANALYSIS
 class SeventhWindow(Screen):
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             SeventhWindow.tonic = selected
+        else:
+            SeventhWindow.tonic = ""
+
+        print(SeventhWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            SeventhWindow.type = selected
+        else:
+            SeventhWindow.type = ""
+        print(SeventhWindow.type)
 
     def timedomain(self):
         BASE_FOLDER = "./AudioFiles"
-        sound_file = self.ids.tdfilename.text + '.wav'
+        sound_file = SeventhWindow.type +'_' +SeventhWindow.tonic + '.wav'
 
         # load sounds
         voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
@@ -420,8 +487,8 @@ class SeventhWindow(Screen):
         mean_zcr = format(np.mean(zcr), '.3f')
         frames = range(len(zcr))
         t = librosa.frames_to_time(frames, sr=sr, hop_length=hop_length)
+        librosa.display.waveshow(voice, alpha=0.5)
         plt.figure(figsize=(25, 5))
-        librosa.display.waveplot(voice, alpha=0.5)
         plt.plot(t, zcr, color="black")
         plt.title("ZCR")
         plt.savefig("zcr")
@@ -452,8 +519,8 @@ class SeventhWindow(Screen):
         # Harmonic & Percussive Signals
         y_harmonic, y_percussive = librosa.effects.hpss(voice)
         plt.figure(figsize=(15, 5))
-        librosa.display.waveplot(y_harmonic, sr=sr, alpha=0.25)
-        librosa.display.waveplot(y_percussive, sr=sr, color='red', alpha=0.5)
+        librosa.display.waveshow(y_harmonic, sr=sr, alpha=0.25)
+        librosa.display.waveshow(y_percussive, sr=sr, color='red', alpha=0.5)
         plt.title('Harmonic + Percussive')
         plt.savefig('hpsignal')
         plt. clf()
@@ -487,6 +554,22 @@ class FourteenthWindow(Screen):
 
 # EIGHTH WINDOW - FREQUENCY DOMAIN ANALYSIS
 class EighthWindow(Screen):
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             EighthWindow.tonic = selected
+        else:
+            EighthWindow.tonic = ""
+
+        print(EighthWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            EighthWindow.type = selected
+        else:
+            EighthWindow.type = ""
+        print(EighthWindow.type)
 
     def frequencydomain(self):
 
@@ -494,7 +577,7 @@ class EighthWindow(Screen):
             return sklearn.preprocessing.minmax_scale(x, axis=axis)
 
         BASE_FOLDER = "./AudioFiles"
-        sound_file = self.ids.fdfilename.text + '.wav'
+        sound_file = EighthWindow.type +'_'+ EighthWindow.tonic + '.wav'
 
         # load sounds
         voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
@@ -519,7 +602,7 @@ class EighthWindow(Screen):
         frames = range(len(spectral_centroids))
         f_times = librosa.frames_to_time(frames, hop_length=hop_length)
         plt.figure(figsize=(20,5))
-        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        librosa.display.waveshow(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_centroids), color='black', label='spectral centroids')
         plt.xlabel('Time')
         plt.title("Spectral Centroid")
@@ -527,7 +610,7 @@ class EighthWindow(Screen):
         plt.clf()
 
         plt.figure(figsize=(20,5))
-        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        librosa.display.waveshow(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_bandwidth), color='black', label='spectral bandwidth')
         plt.xlabel('Time')
         plt.title("Spectral Bandwidth")
@@ -535,7 +618,7 @@ class EighthWindow(Screen):
         plt.clf()
 
         plt.figure(figsize=(20,5))
-        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        librosa.display.waveshow(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_rolloff), color='black', label='spectral rolloff')
         plt.xlabel('Time')
         plt.title("Spectral rolloff")
@@ -543,7 +626,7 @@ class EighthWindow(Screen):
         plt.clf()
 
         plt.figure(figsize=(20,5))
-        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        librosa.display.waveshow(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_flux), color='black', label='spectral flux')
         plt.xlabel('Time')
         plt.title("Spectral flux")
@@ -551,7 +634,7 @@ class EighthWindow(Screen):
         plt.clf()
 
         plt.figure(figsize=(20,5))
-        librosa.display.waveplot(voice, sr=sr, alpha=0.4)
+        librosa.display.waveshow(voice, sr=sr, alpha=0.4)
         plt.plot(f_times, normalize(spectral_contrast), color='black', label='spectral flux')
         plt.xlabel('Time')
         plt.title("Spectral Contrast")
@@ -591,11 +674,27 @@ class NineteenthWindow(Screen):
 
 # EIGHTH WINDOW - TIME-FREQUENCY DOMAIN ANALYSIS
 class NinethWindow(Screen):
+    tonic = ""
+    type = ""
+    def checkbox_click(self, instance, value, selected):
+        if value == True:
+             NinethWindow.tonic = selected
+        else:
+            NinethWindow.tonic = ""
+
+        print(NinethWindow.tonic)
+
+    def checkbox_click1(self, instance, value, selected):
+        if value == True:
+            NinethWindow.type = selected
+        else:
+            NinethWindow.type = ""
+        print(NinethWindow.type)
 
     def timefrequencydomain(self):
 
         BASE_FOLDER = "./AudioFiles"
-        sound_file = self.ids.tfdfilename.text + '.wav'
+        sound_file = NinethWindow.type +'_' + NinethWindow.tonic + '.wav'
         # load sounds
 
         voice, sr = librosa.load(os.path.join(BASE_FOLDER, sound_file))
