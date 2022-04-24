@@ -22,14 +22,1575 @@ from scipy.io import wavfile
 import warnings
 import recorder
 import json
-from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.label import Label
+from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDFlatButton
+from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 
+
+voiceanalysis = """
+WindowManager:
+    FirstWindow:
+    SecondWindow:
+    ThirdWindow:
+    FourthWindow:
+    FifthWindow:
+    SixthWindow:
+    SeventhWindow:
+    EighthWindow:
+    NinethWindow:
+    TenthWindow:
+    # EleventhWindow:
+    TwelvethWindow:
+    ThirteenthWindow:
+    FourteenthWindow:
+    FifteenthWindow:
+    SixteenthWindow:
+    SeventeenthWindow:
+    EighteenthWindow:
+    NineteenthWindow:
+    TwentythWindow:
+    TwentyfirstWindow:
+    TwentysecondWindow:
+    TwentythirdWindow:
+    TwentyfourthWindow:
+
+
+<FirstWindow>:
+    name: 'first'
+    MDGridLayout:
+        cols:1
+        spacing: 10
+        md_bg_color: app.theme_cls.primary_color
+        MDGridLayout:
+            cols:1
+            AnchorLayout:
+                MDCard:
+                    orientation: "vertical"
+                    padding: "4dp"
+                    size_hint: None, None
+                    size: "480dp", "200dp"
+
+                    MDLabel:
+                        font_style: "H4"
+                        text: "Singer's Voice Analysis"
+                        size_hint_y: None
+                        halign:"center"
+                        padding_y:5
+                        height: self.texture_size[1]
+                    MDSeparator:
+                        height: "2dp"
+                        padding_y:5
+                        halign:"center"
+
+                    MDLabel:
+                        text: "1.Select standard note and type of Saragam."
+                        size_hint_y: None
+                        halign:"center"
+                        padding_y:5
+                        font_size:18
+                        height: self.texture_size[1]
+                    MDLabel:
+                        text: "2.Record Aroh and Avaroh in 3 tonic notes."
+                        size_hint_y: None
+                        halign:"center"
+                        padding_y:5
+                        font_size:18
+                        height: self.texture_size[1]
+                    MDLabel:
+                        text: "3.Save each file after recording."
+                        size_hint_y: None
+                        halign:"center"
+                        padding_y:5
+                        font_size:18
+                        height: self.texture_size[1]
+                    MDLabel:
+                        text: "4.Continue to next page for Analysis."
+                        size_hint_y: None
+                        padding_y:5
+                        halign:"center"
+                        font_size:18
+                        height: self.texture_size[1]
+
+        MDGridLayout:
+            cols:1
+            padding:20
+            md_bg_color: app.theme_cls.primary_dark
+            AnchorLayout:
+                MDGridLayout:
+                    cols:2
+                    padding:50
+                    spacing:30
+                    md_bg_color: app.theme_cls.primary_light
+                    AnchorLayout:
+                        MDLabel:
+                            font_style: "H6"
+                            text: "Select Tonic Note: "
+                    MDGridLayout:
+                        cols:2
+                        spacing:30
+                        CheckBox:
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"120")
+                        MDLabel:
+                            text: "120"
+                        CheckBox:
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"130")
+                        MDLabel:
+                            text: "130"
+                        CheckBox:
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"140")
+                        MDLabel:
+                            text: "140"
+            AnchorLayout:
+                MDGridLayout:
+                    cols:2
+                    padding:50
+                    spacing:30
+                    md_bg_color: app.theme_cls.primary_color
+                    AnchorLayout:
+                        MDLabel:
+                            font_style: "H6"
+                            text: "Select Type of Sargam: "
+
+                    MDGridLayout:
+                        cols:2
+                        spacing:30
+                        CheckBox:
+                            group: "type"
+                            on_active: root.checkbox_click1(self,self.active,"Aroh")
+                        MDLabel:
+                            text: "Aroh"
+                        CheckBox:
+                            group: "type"
+                            on_active: root.checkbox_click1(self,self.active,"Avaroh")
+                        MDLabel:
+                            text: "Avaroh"
+        MDGridLayout:
+            cols:4
+            spacing:80
+            padding:80
+            md_bg_color: app.theme_cls.primary_light
+
+            AnchorLayout:
+                MDRaisedButton:
+                    id: record
+                    font_size : 40
+                    text: "RECORD"
+                    icon: "microphone"
+                    on_press:
+                        root.startrecord()
+            AnchorLayout:
+                MDRaisedButton:
+                    id: stop
+                    font_size : 40
+                    text: "STOP"
+                    icon: "stop"
+                    on_press:
+                        root.stoprecord()
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "SAVE"
+                    font_size : 40
+                    icon: "content-save"
+                    on_release: root.saverecord()
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "NEXT ->"
+                    font_size : 40
+                    on_release:
+                        app.root.current = 'second'
+                        root.manager.transition.direction = 'left'
+
+<SecondWindow>:
+    name: 'second'
+    MDGridLayout:
+        cols:1
+        padding: 50
+        MDRaisedButton:
+            text: "BACK"
+            font_size:20
+            md_bg_color: app.theme_cls.primary_color
+            on_release:
+                app.root.current = 'first'
+                root.manager.transition.direction = 'right'
+        MDGridLayout:
+            cols:2
+            padding: 50
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "Determine Vocal Range"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'third'
+                        root.manager.transition.direction = 'left'
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "Determine Vocal Features"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'fourth'
+                        root.manager.transition.direction = 'left'
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "View Tristimulus Diagram"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'fifth'
+                        root.manager.transition.direction = 'left'
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "View Power Spectrum"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'sixth'
+                        root.manager.transition.direction = 'left'
+
+
+<ThirdWindow>:
+    name: 'third'
+    MDGridLayout:
+        cols:1
+        padding: 50
+        MDRaisedButton:
+            text: "BACK"
+            font_size:20
+            md_bg_color: app.theme_cls.primary_color
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'
+        Widget:
+            size_hint_y:None
+            height:150
+        MDGridLayout:
+            cols:4
+            spacing: 50
+            padding: 100
+            Widget:
+                size_hint_x:None
+                height:50
+            AnchorLayout:
+                MDCard:
+                    size_hint: None, None
+                    size: 400,400
+                    pos_hint: {"center_x":0.3, "center_y": 0.3}
+                    elevation: 10
+                    spacing: 25
+                    orientation: 'vertical'
+                    border_radius: 20
+                    radius: [15]
+                    MDLabel:
+                        text: "Tonic Range:"
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+
+                    MDLabel:
+                        text: "Lowest Note:"
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+
+
+                    MDLabel:
+                        text: "Highest Note:"
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+
+                    MDLabel:
+                        text: "Closest Key Frequency:"
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+
+                    MDLabel:
+                        text: "Keyboard Key:"
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+
+            AnchorLayout:
+                MDCard:
+                    size_hint: None, None
+                    size: 400,400
+                    pos_hint: {"center_x":0.7, "center_y": 0.7}
+                    elevation: 10
+                    spacing: 25
+                    border_radius: 20
+                    radius: [15]
+                    orientation: 'vertical'
+
+                    MDLabel:
+                        id: tonicrange
+                        text: ""
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDLabel:
+                        id: lowestnote
+                        text: ""
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDLabel:
+                        id: highestnote
+                        text: ""
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDLabel:
+                        id: closestkey
+                        text: ""
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDLabel:
+                        id: keyboardkey
+                        text: ""
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+            Widget:
+                size_hint_x:None
+                height:50
+        Widget:
+            size_hint_y:None
+            height:150
+
+        AnchorLayout:
+            MDRaisedButton:
+                text: "Analyse"
+                font_size:40
+                pos_hint: {"center_x:0.5"}
+                md_bg_color: app.theme_cls.primary_color
+                on_press: root.analyserange()
+
+
+<FourthWindow>:
+    name: 'fourth'
+    MDGridLayout:
+        cols:1
+        padding:50
+        MDRaisedButton:
+            text: "BACK"
+            font_size:20
+            md_bg_color: app.theme_cls.primary_color
+            on_release:
+                app.root.current = 'second'
+                root.manager.transition.direction = 'right'
+        MDGridLayout:
+            rows:3
+            spacing:80
+            padding:100
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "Time Domain Features"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'seventh'
+                        root.manager.transition.direction = 'left'
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "Frequency Domain Features"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'eighth'
+                        root.manager.transition.direction = 'left'
+            AnchorLayout:
+                MDRaisedButton:
+                    text: "Time-Frequency Domain Features"
+                    font_size: 30
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release:
+                        app.root.current = 'nineth'
+                        root.manager.transition.direction = 'left'
+
+<FifthWindow>:
+    name: 'fifth'
+    MDGridLayout:
+        cols:2
+        padding:50
+        spacing:50
+        MDGridLayout:
+            cols:1
+            spacing: 50
+            size_hint_x: None
+            width: 450
+            MDRaisedButton:
+                text: "BACK"
+                font_size:20
+                md_bg_color: app.theme_cls.primary_color
+                on_release:
+                    app.root.current = 'second'
+                    root.manager.transition.direction = 'right'
+                    tristimulus.source = ""
+            MDGridLayout:
+                cols:1
+                spacing: 100
+                AnchorLayout:
+                    MDCard:
+                        size_hint: None, None
+                        size: 450,600
+                        pos_hint: {"center_x":0.5, "center_y": 0.5}
+                        elevation: 10
+                        spacing: 25
+                        padding: 25
+                        border_radius: 20
+                        radius: [15]
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Select Tonic Note: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDSeparator:
+                            height: "2dp"
+                            padding_y:5
+                            halign:"center"
+                        MDGridLayout:
+                            cols:4
+                            MDCheckbox:
+                                group: "tonic_note"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                on_active: root.checkbox_click(self,self.active,"120")
+                            MDLabel:
+                                text: "120"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                group: "tonic_note"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                on_active: root.checkbox_click(self,self.active,"130")
+                            MDLabel:
+                                text: "130"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"140")
+                            MDLabel:
+                                text: "140"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"A2")
+                            MDLabel:
+                                text: "A2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"B2")
+                            MDLabel:
+                                text: "B2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"C2")
+                            MDLabel:
+                                text: "C2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                        Widget:
+                            size_hint_y:None
+                            height:70
+                        MDLabel:
+                            text: "Select Type of Sargam: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDSeparator:
+                            height: "2dp"
+                            padding_y:10
+                            halign:"center"
+                        MDGridLayout:
+                            cols:5
+
+                            MDCheckbox:
+                                group: "type"
+                                on_active: root.checkbox_click1(self,self.active,"Aroh")
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDLabel:
+                                text: "Aroh"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                group: "type"
+                                on_active: root.checkbox_click1(self,self.active,"Avaroh")
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDLabel:
+                                text: "Avaroh"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            Widget:
+                                size_hint_x:None
+                                width:20
+
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release: root.view()
+
+        Image:
+            id: tristimulus
+            size_hint_x: None
+            width: 1000
+            allow_stretch: True
+            keep_ratio: False
+            source: ""
+
+
+<SixthWindow>:
+    name: 'sixth'
+    MDGridLayout:
+        cols:2
+        padding:50
+        spacing:50
+        MDGridLayout:
+            cols:1
+            spacing: 50
+            size_hint_x: None
+            width: 450
+            MDRaisedButton:
+                text: "BACK"
+                font_size:20
+                md_bg_color: app.theme_cls.primary_color
+                on_release:
+                    app.root.current = 'second'
+                    root.manager.transition.direction = 'right'
+                    power.source = ""
+            MDGridLayout:
+                cols:1
+                spacing: 100
+                AnchorLayout:
+                    MDCard:
+                        size_hint: None, None
+                        size: 450,600
+                        pos_hint: {"center_x":0.5, "center_y": 0.5}
+                        elevation: 10
+                        spacing: 25
+                        padding: 25
+                        border_radius: 20
+                        radius: [15]
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Select Tonic Note: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDSeparator:
+                            height: "2dp"
+                            padding_y:5
+                            halign:"center"
+                        MDGridLayout:
+                            cols:4
+                            MDCheckbox:
+                                group: "tonic_note"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                on_active: root.checkbox_click(self,self.active,"120")
+                            MDLabel:
+                                text: "120"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                group: "tonic_note"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                on_active: root.checkbox_click(self,self.active,"130")
+                            MDLabel:
+                                text: "130"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"140")
+                            MDLabel:
+                                text: "140"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"A2")
+                            MDLabel:
+                                text: "A2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"B2")
+                            MDLabel:
+                                text: "B2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                                group: "tonic_note"
+                                on_active: root.checkbox_click(self,self.active,"C2")
+                            MDLabel:
+                                text: "C2"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                        Widget:
+                            size_hint_y:None
+                            height:70
+                        MDLabel:
+                            text: "Select Type of Sargam: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDSeparator:
+                            height: "2dp"
+                            padding_y:10
+                            halign:"center"
+                        MDGridLayout:
+                            cols:5
+
+                            MDCheckbox:
+                                group: "type"
+                                on_active: root.checkbox_click1(self,self.active,"Aroh")
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDLabel:
+                                text: "Aroh"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDCheckbox:
+                                group: "type"
+                                on_active: root.checkbox_click1(self,self.active,"Avaroh")
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            MDLabel:
+                                text: "Avaroh"
+                                font_size: 30
+                                halign: 'center'
+                                size_hint_y: None
+                                height:self.texture_size[1]
+                                padding_y: 10
+                            Widget:
+                                size_hint_x:None
+                                width:20
+
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release: root.view()
+        Image:
+            id: power
+            size_hint_x: None
+            width: 1000
+            allow_stretch: True
+            keep_ratio: False
+            source: ""
+
+
+<SeventhWindow>:
+    name: 'seventh'
+    MDGridLayout:
+        cols:1
+        padding:50
+        spacing:50
+        md_bg_color: app.theme_cls.primary_dark
+        MDRaisedButton:
+            text: "BACK"
+            font_size:20
+            md_bg_color: app.theme_cls.primary_color
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        MDGridLayout:
+            cols:2
+            # spacing: 100
+            md_bg_color: app.theme_cls.primary_light
+            AnchorLayout:
+                MDCard:
+                    size_hint: None, None
+                    size: 450,600
+                    pos_hint: {"center_x":0.5, "center_y": 0.5}
+                    elevation: 10
+                    spacing: 25
+                    padding: 25
+                    border_radius: 20
+                    radius: [15]
+                    orientation: 'vertical'
+                    MDLabel:
+                        text: "Select Tonic Note: "
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDSeparator:
+                        height: "2dp"
+                        padding_y:5
+                        halign:"center"
+                    MDGridLayout:
+                        cols:4
+                        MDCheckbox:
+                            group: "tonic_note"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            on_active: root.checkbox_click(self,self.active,"120")
+                        MDLabel:
+                            text: "120"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            group: "tonic_note"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            on_active: root.checkbox_click(self,self.active,"130")
+                        MDLabel:
+                            text: "130"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"140")
+                        MDLabel:
+                            text: "140"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"A2")
+                        MDLabel:
+                            text: "A2"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"B2")
+                        MDLabel:
+                            text: "B2"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                            group: "tonic_note"
+                            on_active: root.checkbox_click(self,self.active,"C2")
+                        MDLabel:
+                            text: "C2"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                    Widget:
+                        size_hint_y:None
+                        height:70
+                    MDLabel:
+                        text: "Select Type of Sargam: "
+                        font_size: 30
+                        halign: 'center'
+                        size_hint_y: None
+                        height:self.texture_size[1]
+                        padding_y: 10
+                    MDSeparator:
+                        height: "2dp"
+                        padding_y:10
+                        halign:"center"
+                    MDGridLayout:
+                        cols:5
+
+                        MDCheckbox:
+                            group: "type"
+                            on_active: root.checkbox_click1(self,self.active,"Aroh")
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            text: "Aroh"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDCheckbox:
+                            group: "type"
+                            on_active: root.checkbox_click1(self,self.active,"Avaroh")
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            text: "Avaroh"
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        Widget:
+                            size_hint_x:None
+                            width:20
+
+                    MDRaisedButton:
+                        text: "Calculate"
+                        font_size:40
+                        pos_hint: {"center_x":0.5}
+                        md_bg_color: app.theme_cls.primary_color
+                        on_release: root.timedomain()
+
+            AnchorLayout:
+                MDCard:
+                    size_hint: None, None
+                    size: 900,600
+                    pos_hint: {"center_x":0.5, "center_y": 0.5}
+                    elevation: 10
+                    spacing: 25
+                    padding: 25
+                    border_radius: 20
+                    radius: [15]
+                    orientation: 'vertical'
+                    MDGridLayout:
+                        cols:3
+                        spacing: 10
+                        padding: 30
+                        MDLabel:
+                            text: "Zero Crossing Rate: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            id: mean_zcr
+                            text: ""
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release:
+                                app.root.current = 'tenth'
+                                root.manager.transition.direction = 'left'
+                        MDLabel:
+                            text: "Root Mean Sqaure Energy: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            id: mean_rmse
+                            text: ""
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release:
+                                app.root.current = 'twelveth'
+                                root.manager.transition.direction = 'left'
+                        MDLabel:
+                            text: "Tempo: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            id: tempo
+                            text: ""
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release:
+                                app.root.current = 'thirteenth'
+                                root.manager.transition.direction = 'left'
+                        MDLabel:
+                            text: "Harmonic & Percussive Signals: "
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDLabel:
+                            id: hpsignal
+                            text: ""
+                            font_size: 30
+                            halign: 'center'
+                            size_hint_y: None
+                            height:self.texture_size[1]
+                            padding_y: 10
+                        MDRaisedButton:
+                            text: "View"
+                            font_size:40
+                            pos_hint: {"center_x":0.5}
+                            md_bg_color: app.theme_cls.primary_color
+                            on_release:
+                                app.root.current = 'fourteenth'
+                                root.manager.transition.direction = 'left'
+
+<TenthWindow>:
+    name: 'tenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: zcr_source
+            source: ''
+
+
+# <EleventhWindow>:
+#     name: 'eleventh'
+#     MDGridLayout:
+#         cols:1
+#         size: root.width, root.height
+#         spacing: 20
+#         padding:50
+#         MDFlatButton:
+#             text: "BACK"
+#             on_release:
+#                 app.root.current = 'seventh'
+#                 root.manager.transition.direction = 'right'
+#         Image:
+#             source: 'zcr.png'
+
+
+<TwelvethWindow>:
+    name: 'twelveth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: rmse_source
+            source: ''
+
+<ThirteenthWindow>:
+    name: 'thirteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: tempo_source
+            source: ''
+
+<FourteenthWindow>:
+    name: 'fourteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'seventh'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: hpsignal_source
+            source: ''
+
+
+<EighthWindow>:
+    name: 'eighth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        MDLabel:
+            text: "Select Tonic Note: "
+        MDGridLayout:
+            cols:2
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"120")
+            MDLabel:
+                text: "120"
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"130")
+            MDLabel:
+                text: "130"
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"140")
+            MDLabel:
+                text: "140"
+
+        MDLabel:
+            text: "Select Type of Sargam: "
+        MDGridLayout:
+            cols:2
+            CheckBox:
+                group: "type"
+                on_active: root.checkbox_click1(self,self.active,"Aroh")
+            MDLabel:
+                text: "Aroh"
+            CheckBox:
+                group: "type"
+                on_active: root.checkbox_click1(self,self.active,"Avaroh")
+            MDLabel:
+                text: "Avaroh"
+
+        MDFlatButton:
+            text: "CALCULATE"
+            on_release: root.frequencydomain()
+        MDGridLayout:
+            cols:3
+            spacing: 10
+            padding: 30
+            MDLabel:
+                text: "Spectral Centroid: "
+            MDLabel:
+                id: centroid
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'fifteenth'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Spectral Bandwidth: "
+            MDLabel:
+                id: bandwidth
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'sixteenth'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Spectral Rolloff: "
+            MDLabel:
+                id: rolloff
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'seventeenth'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Spectral Flux: "
+            MDLabel:
+                id: flux
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'eightteenth'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Spectral Contrast: "
+            MDLabel:
+                id: contrast
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'nineteenth'
+                    root.manager.transition.direction = 'left'
+
+<FifteenthWindow>:
+    name: 'fifteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: centroid_source
+            source: ''
+
+<SixteenthWindow>:
+    name: 'sixteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: bandwidth_source
+            source: ''
+
+<SeventeenthWindow>:
+    name: 'seventeenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: rolloff_source
+            source: ''
+
+<EighteenthWindow>:
+    name: 'eightteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: flux_source
+            source: ''
+
+<NineteenthWindow>:
+    name: 'nineteenth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'eighth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: contrast_source
+            source: ''
+
+<NinethWindow>:
+    name: 'nineth'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'fourth'
+                root.manager.transition.direction = 'right'
+        MDLabel:
+            text: "Select Tonic Note: "
+        MDGridLayout:
+            cols:2
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"120")
+            MDLabel:
+                text: "120"
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"130")
+            MDLabel:
+                text: "130"
+            CheckBox:
+                group: "tonic_note"
+                on_active: root.checkbox_click(self,self.active,"140")
+            MDLabel:
+                text: "140"
+
+        MDLabel:
+            text: "Select Type of Sargam: "
+        MDGridLayout:
+            cols:2
+            CheckBox:
+                group: "type"
+                on_active: root.checkbox_click1(self,self.active,"Aroh")
+            MDLabel:
+                text: "Aroh"
+            CheckBox:
+                group: "type"
+                on_active: root.checkbox_click1(self,self.active,"Avaroh")
+            MDLabel:
+                text: "Avaroh"
+
+        MDFlatButton:
+            text: "CALCULATE"
+            on_release: root.timefrequencydomain()
+
+        MDGridLayout:
+            cols:3
+            spacing: 10
+            padding: 30
+            MDLabel:
+                text: "Spectrogram"
+            MDLabel:
+                id: spectrogram
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'twenty'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Mel Spectrogram"
+            MDLabel:
+                id: melspectrogram
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentyone'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "MFCC"
+            MDLabel:
+                id: mfcc
+                text: ""
+                multiline:True
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentytwo'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Chroma Features"
+            MDLabel:
+                id: chromafeatures
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentythree'
+                    root.manager.transition.direction = 'left'
+            MDLabel:
+                text: "Pitch Hostogram"
+            MDLabel:
+                id: pitchhistogram
+                text: ""
+            MDFlatButton:
+                text: "View"
+                on_release:
+                    app.root.current = 'twentyfour'
+                    root.manager.transition.direction = 'left'
+
+<TwentythWindow>:
+    name: 'twenty'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: spectrogram_source
+            source: ''
+
+<TwentyfirstWindow>:
+    name: 'twentyone'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: mel_source
+            source: ''
+
+<TwentysecondWindow>:
+    name: 'twentytwo'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: mfcc_source
+            source: ''
+<TwentythirdWindow>:
+    name: 'twentythree'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: chroma_source
+            source: ''
+
+<TwentyfourthWindow>:
+    name: 'twentyfour'
+    MDGridLayout:
+        cols:1
+        size: root.width, root.height
+        spacing: 20
+        padding:50
+        MDFlatButton:
+            text: "BACK"
+            on_release:
+                app.root.current = 'nineth'
+                root.manager.transition.direction = 'right'
+        Image:
+            id: pitchhistogram_source
+            source: ''
+
+"""
 # DEFINED WINDOWS
 
 # FIRST WINDOW - RECORDING AND SAVING
@@ -297,6 +1858,13 @@ class SecondWindow(Screen):
 # THIRD WINDOW - ANALYSE TONIC NOTE AND RANGE
 class ThirdWindow(Screen):
 
+    def on_enter(self):
+        self.ids.tonicrange.text = ""
+        self.ids.lowestnote.text = ""
+        self.ids.highestnote.text = ""
+        self.ids.closestkey.text = ""
+        self.ids.keyboardkey.text = ""
+
     def analyserange(self):
         keyboard_keys = {
             82.40689 : "E2",
@@ -424,9 +1992,9 @@ class FifthWindow(Screen):
         print(FifthWindow.type)
 
     def view(self):
-        name = FifthWindow.type+FifthWindow.tonic
+        name = FifthWindow.type+"_"+FifthWindow.tonic
         if name:
-            self.ids.tristimulus.source = 'tri' + name+'.png'
+            self.ids.tristimulus.source = 'tri'+ name+'.png'
 
 # SIXTH WINDOW - VIEW POWER SPRECTRUM DIAGRAM
 class SixthWindow(Screen):
@@ -450,7 +2018,7 @@ class SixthWindow(Screen):
         print(SixthWindow.type)
 
     def view(self):
-        name = SixthWindow.type+SixthWindow.tonic
+        name = SixthWindow.type+"_"+SixthWindow.tonic
         if name:
             self.ids.power.source = 'pow'+name+'.png'
 
@@ -785,13 +2353,14 @@ class TwentyfourthWindow(Screen):
 class WindowManager(ScreenManager):
     pass
 
-kv = Builder.load_file('voiceanalysis.kv')
+# kv = Builder.load_file('voiceanalysis.kv')
 
-class VoiceApp(App):
+class VoiceApp(MDApp):
 
     def build(self):
-        running = None
-        return kv
+        self.theme_cls.primary_palette = "Blue"
+        self.root = Builder.load_string(voiceanalysis)
+        # return kv
 
 if __name__=='__main__':
     VoiceApp().run()
