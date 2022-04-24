@@ -75,20 +75,20 @@ WindowManager:
             cols:4
             spacing: 20
             padding:50
-            Button:
+            MDFlatButton:
                 id: record
                 text: "RECORD"
                 on_press:
                     root.startrecord()
-            Button:
+            MDFlatButton:
                 id: stop
                 text: "STOP"
                 on_press:
                     root.stoprecord()
-            Button:
+            MDFlatButton:
                 text: "SAVE"
                 on_release: root.saverecord()
-            Button:
+            MDFlatButton:
                 text: "NEXT"
                 on_release:
                     app.root.current = 'second'
@@ -102,29 +102,29 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'first'
                 root.manager.transition.direction = 'right'
         GridLayout:
             cols: 2
-            Button:
+            MDFlatButton:
                 text: "Determine Vocal Range"
                 on_release:
                     app.root.current = 'third'
                     root.manager.transition.direction = 'left'
-            Button:
+            MDFlatButton:
                 text: "Determine Vocal Features"
                 on_release:
                     app.root.current = 'fourth'
                     root.manager.transition.direction = 'left'
-            Button:
+            MDFlatButton:
                 text: "View Tristimulus Diagram"
                 on_release:
                     app.root.current = 'fifth'
                     root.manager.transition.direction = 'left'
-            Button:
+            MDFlatButton:
                 text: "View Power Spectrum"
                 on_release:
                     app.root.current = 'sixth'
@@ -138,12 +138,12 @@ WindowManager:
         size: root.width, root.height
         spacing: 10
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'second'
                 root.manager.transition.direction = 'right'
-        Button:
+        MDFlatButton:
             text: "ANALYSE"
             on_press: root.analyserange()
         GridLayout:
@@ -186,26 +186,28 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'second'
                 root.manager.transition.direction = 'right'
-        Button:
+        MDFlatButton:
             text: "Time Domain Features"
             on_release:
                 app.root.current = 'seventh'
                 root.manager.transition.direction = 'left'
-        Button:
+        MDFlatButton:
             text: "Frequency Domain Features"
             on_release:
                 app.root.current = 'eighth'
                 root.manager.transition.direction = 'left'
-        Button:
+        MDFlatButton:
             text: "Time-Frequency Domain Features"
             on_release:
                 app.root.current = 'nineth'
                 root.manager.transition.direction = 'left'
+
+
 
 <FifthWindow>:
     name: 'fifth'
@@ -215,7 +217,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'second'
@@ -254,7 +256,7 @@ WindowManager:
                 on_active: root.checkbox_click1(self,self.active,"Avaroh")
             MDLabel:
                 text: "Avaroh"
-        Button:
+        MDFlatButton:
             text: "VIEW"
             on_release: root.view()
         Image:
@@ -269,7 +271,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'second'
@@ -308,7 +310,7 @@ WindowManager:
                 on_active: root.checkbox_click1(self,self.active,"Avaroh")
             MDLabel:
                 text: "Avaroh"
-        Button:
+        MDFlatButton:
             text: "VIEW"
             on_release: root.view()
         Image:
@@ -323,7 +325,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'fourth'
@@ -363,7 +365,7 @@ WindowManager:
             MDLabel:
                 text: "Avaroh"
 
-        Button:
+        MDFlatButton:
             text: "CALCULATE"
             on_release: root.timedomain()
         GridLayout:
@@ -375,7 +377,7 @@ WindowManager:
             MDLabel:
                 id: mean_zcr
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'tenth'
@@ -385,7 +387,7 @@ WindowManager:
             # MDLabel:
             #     id: e
             #     text: ""
-            # Button:
+            # MDFlatButton:
             #     text: "View"
             #     on_release:
             #         app.root.current = 'eleventh'
@@ -395,7 +397,7 @@ WindowManager:
             MDLabel:
                 id: mean_rmse
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twelveth'
@@ -405,7 +407,7 @@ WindowManager:
             MDLabel:
                 id: tempo
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'thirteenth'
@@ -415,7 +417,7 @@ WindowManager:
             MDLabel:
                 id: hpsignal
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'fourteenth'
@@ -428,7 +430,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'seventh'
@@ -445,7 +447,7 @@ WindowManager:
 #         size: root.width, root.height
 #         spacing: 20
 #         padding:50
-#         Button:
+#         MDFlatButton:
 #             text: "BACK"
 #             on_release:
 #                 app.root.current = 'seventh'
@@ -461,7 +463,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'seventh'
@@ -477,7 +479,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'seventh'
@@ -493,7 +495,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'seventh'
@@ -510,7 +512,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'fourth'
@@ -550,7 +552,7 @@ WindowManager:
             MDLabel:
                 text: "Avaroh"
 
-        Button:
+        MDFlatButton:
             text: "CALCULATE"
             on_release: root.frequencydomain()
         GridLayout:
@@ -562,7 +564,7 @@ WindowManager:
             MDLabel:
                 id: centroid
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'fifteenth'
@@ -572,7 +574,7 @@ WindowManager:
             MDLabel:
                 id: bandwidth
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'sixteenth'
@@ -582,7 +584,7 @@ WindowManager:
             MDLabel:
                 id: rolloff
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'seventeenth'
@@ -592,7 +594,7 @@ WindowManager:
             MDLabel:
                 id: flux
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'eightteenth'
@@ -602,7 +604,7 @@ WindowManager:
             MDLabel:
                 id: contrast
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'nineteenth'
@@ -615,7 +617,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'eighth'
@@ -631,7 +633,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'eighth'
@@ -647,7 +649,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'eighth'
@@ -663,7 +665,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'eighth'
@@ -679,7 +681,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'eighth'
@@ -695,7 +697,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'fourth'
@@ -735,7 +737,7 @@ WindowManager:
             MDLabel:
                 text: "Avaroh"
 
-        Button:
+        MDFlatButton:
             text: "CALCULATE"
             on_release: root.timefrequencydomain()
 
@@ -748,7 +750,7 @@ WindowManager:
             MDLabel:
                 id: spectrogram
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twenty'
@@ -758,7 +760,7 @@ WindowManager:
             MDLabel:
                 id: melspectrogram
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twentyone'
@@ -769,7 +771,7 @@ WindowManager:
                 id: mfcc
                 text: ""
                 multiline:True
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twentytwo'
@@ -779,7 +781,7 @@ WindowManager:
             MDLabel:
                 id: chromafeatures
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twentythree'
@@ -789,7 +791,7 @@ WindowManager:
             MDLabel:
                 id: pitchhistogram
                 text: ""
-            Button:
+            MDFlatButton:
                 text: "View"
                 on_release:
                     app.root.current = 'twentyfour'
@@ -802,7 +804,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'nineth'
@@ -818,7 +820,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'nineth'
@@ -834,7 +836,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'nineth'
@@ -849,7 +851,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'nineth'
@@ -865,7 +867,7 @@ WindowManager:
         size: root.width, root.height
         spacing: 20
         padding:50
-        Button:
+        MDFlatButton:
             text: "BACK"
             on_release:
                 app.root.current = 'nineth'
