@@ -35,6 +35,8 @@ from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 # from kivy.config import Config
+# Config.set('graphics', 'width', '1200')
+# Config.set('graphics', 'height', '700')
 # kivy.config.Config.set('graphics','resizable',False)
 
 
@@ -2044,7 +2046,7 @@ WindowManager:
                     MDGridLayout:
                         cols:3
                         MDLabel:
-                            text: "Pitch Hostogram:"
+                            text: "Pitch Histogram:"
                             font_size: 30
                             halign: 'center'
                             size_hint_y: None
@@ -2304,7 +2306,7 @@ class FirstWindow(Screen):
                 return 0
         def pitchEstimator(path):
             sr, audio = wavfile.read(path)
-            time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True,step_size=1000)
+            time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True,step_size=1500)
             lis=[]
             for i,j in enumerate(confidence):
                 if j > 0.89:
@@ -2930,8 +2932,9 @@ class VoiceApp(MDApp):
             "Blue", "500", "50", "800", "Teal", "600", "100", "800"
         )
         self.root = Builder.load_string(voiceanalysis)
-        # Window.fullscreen = 'auto'
-
+        #Window.fullscreen = 'auto'
+        # print(window_sizesWindow.size)
+        # Window.size = (1400,850)
         # return kv
 
 if __name__=='__main__':
