@@ -233,7 +233,6 @@ WindowManager:
                                     spacing:30
                                     MDCheckbox:
                                         group: "type"
-
                                         on_active: root.checkbox_click1(self,self.active,"Aroh")
                                     MDLabel:
                                         text: "Aroh"
@@ -258,25 +257,25 @@ WindowManager:
                     font_size : 40
                     text: "RECORD"
                     icon: "microphone"
-                    md_bg_color: app.theme_cls.primary_color
-                    on_press:
-                        root.startrecord()
+                    # md_bg_color: app.theme_cls.primary_color
+                    # on_press:
+                    #     root.startrecord()
             AnchorLayout:
                 MDRectangleFlatIconButton:
                     id: stop
                     font_size : 40
                     text: "STOP"
                     icon: "stop"
-                    md_bg_color: app.theme_cls.primary_color
-                    on_press:
-                        root.stoprecord()
+                    # md_bg_color: app.theme_cls.primary_color
+                    # on_press:
+                    #     root.stoprecord()
             AnchorLayout:
                 MDRectangleFlatIconButton:
                     text: "SAVE"
                     font_size : 40
                     icon: "content-save"
-                    md_bg_color: app.theme_cls.primary_color
-                    on_release: root.saverecord()
+                    # md_bg_color: app.theme_cls.primary_color
+                    # on_release: root.saverecord()
             AnchorLayout:
                 MDRaisedButton:
                     text: "NEXT"
@@ -2194,240 +2193,240 @@ class FirstWindow(Screen):
         else:
             FirstWindow.type = ""
 
-    def startrecord(self):
-        rec = recorder.Recorder(channels=2)
-        global running
-        running = None
-        tonic = FirstWindow.tonic
-        type = FirstWindow.type
-        folder_name = type+'_'+str(tonic)
-        name=type+'_'+str(tonic)+'.wav'
-        if running is not None:
-            print('already running')
-        else:
-            running = rec.open(name, 'wb')
-            running.start_recording()
+    # def startrecord(self):
+    #     rec = recorder.Recorder(channels=2)
+    #     global running
+    #     running = None
+    #     tonic = FirstWindow.tonic
+    #     type = FirstWindow.type
+    #     folder_name = type+'_'+str(tonic)
+    #     name=type+'_'+str(tonic)+'.wav'
+    #     if running is not None:
+    #         print('already running')
+    #     else:
+    #         running = rec.open(name, 'wb')
+    #         running.start_recording()
 
-    def stoprecord(self):
-        global running
-        tonic = FirstWindow.tonic
-        type = FirstWindow.type
-        folder_name = type+'_'+str(tonic)
-        name=type+'_'+str(tonic)+'.wav'
-        if running is not None:
-            running.stop_recording()
-            running.close()
-            running = None
-        else:
-            print('not running')
-        if (os.path.exists(f'AudioRecord/{name}')):
-            os.remove(f'AudioRecord/{name}')
-        os.rename(name, f'AudioRecord/{name}')
+    # def stoprecord(self):
+    #     global running
+    #     tonic = FirstWindow.tonic
+    #     type = FirstWindow.type
+    #     folder_name = type+'_'+str(tonic)
+    #     name=type+'_'+str(tonic)+'.wav'
+    #     if running is not None:
+    #         running.stop_recording()
+    #         running.close()
+    #         running = None
+    #     else:
+    #         print('not running')
+    #     if (os.path.exists(f'AudioRecord/{name}')):
+    #         os.remove(f'AudioRecord/{name}')
+    #     os.rename(name, f'AudioRecord/{name}')
 
-    def saverecord(self):
-        tonic = FirstWindow.tonic
-        type = FirstWindow.type
-        folder_name = type+'_'+str(tonic)
-        name=type+'_'+str(tonic)+'.wav'
-        path = f'AudioFiles/{name}'
-        folder = f'AudioFiles/{folder_name}'
-        def match_target_amplitude(aChunk, target_dBFS):
-            ''' Normalize given audio chunk '''
-            change_in_dBFS = target_dBFS - aChunk.dBFS
-            return aChunk.apply_gain(change_in_dBFS)
-        try:
-            os.mkdir(folder)
-            print("Directory " , folder ,  " Created ")
-        except FileExistsError:
-            print("Directory " , folder ,  " already exists")
+    # def saverecord(self):
+    #     tonic = FirstWindow.tonic
+    #     type = FirstWindow.type
+    #     folder_name = type+'_'+str(tonic)
+    #     name=type+'_'+str(tonic)+'.wav'
+    #     path = f'AudioFiles/{name}'
+    #     folder = f'AudioFiles/{folder_name}'
+    #     def match_target_amplitude(aChunk, target_dBFS):
+    #         ''' Normalize given audio chunk '''
+    #         change_in_dBFS = target_dBFS - aChunk.dBFS
+    #         return aChunk.apply_gain(change_in_dBFS)
+    #     try:
+    #         os.mkdir(folder)
+    #         print("Directory " , folder ,  " Created ")
+    #     except FileExistsError:
+    #         print("Directory " , folder ,  " already exists")
 
-        song = AudioSegment.from_wav(path)
-        chunks = split_on_silence (
-            song,
-            min_silence_len = 100,
-            silence_thresh = -35
-        )
-        for i, chunk in enumerate(chunks):
-            silence_chunk = AudioSegment.silent(duration=100)
-            audio_chunk = silence_chunk + chunk + silence_chunk
-            normalized_chunk = match_target_amplitude(audio_chunk, -25.0)
-            if len(str(i))==1:
-                normalized_chunk.export(
-                "./{1}/sargam0{0}.wav".format(i,folder),
-                bitrate = "192k",
-                format = "wav"
-            )
-            else:
-                normalized_chunk.export("./{1}/sargam{0}.wav".format(i,folder),
-                bitrate = "192k",
-                format = "wav"
-            )
-        for filename in sorted(os.listdir(folder)):
-            f = os.path.join(folder, filename)
-            if os.path.getsize(f) < 80*1024:
-                os.remove(f)
+    #     song = AudioSegment.from_wav(path)
+    #     chunks = split_on_silence (
+    #         song,
+    #         min_silence_len = 100,
+    #         silence_thresh = -35
+    #     )
+    #     for i, chunk in enumerate(chunks):
+    #         silence_chunk = AudioSegment.silent(duration=100)
+    #         audio_chunk = silence_chunk + chunk + silence_chunk
+    #         normalized_chunk = match_target_amplitude(audio_chunk, -25.0)
+    #         if len(str(i))==1:
+    #             normalized_chunk.export(
+    #             "./{1}/sargam0{0}.wav".format(i,folder),
+    #             bitrate = "192k",
+    #             format = "wav"
+    #         )
+    #         else:
+    #             normalized_chunk.export("./{1}/sargam{0}.wav".format(i,folder),
+    #             bitrate = "192k",
+    #             format = "wav"
+    #         )
+    #     for filename in sorted(os.listdir(folder)):
+    #         f = os.path.join(folder, filename)
+    #         if os.path.getsize(f) < 80*1024:
+    #             os.remove(f)
 
-        warnings.filterwarnings('ignore')
-        warnings.warn('Do not show this message')
-        base="./AudioFiles/" + folder_name
-        sar = []
-        for filename in os.scandir(base):
-            sar.append(filename.path)
-        voice = []
-        for j in range(len(sar)):
-            voice1, sr = librosa.load(sar[j])
-            voice.append(voice1)
-        def limitFreq(freq,size):
-            for i,j in enumerate(freq):
-                if j>size:
-                    return i
-        def remove_till_limit(Xaxis,limit,maxBins):
-            newX=[]
-            for i in Xaxis[:maxBins]:
-                if i<limit:
-                    newX.append(0)
-                else:
-                    newX.append(i)
-            return newX
-        def getFundamental(Xaxis,bins):
-            for i,j in enumerate(Xaxis[20:bins]):
-                if j>0:
-                    return i
-        def getIndxTill(end,freq,indx,gap):
-            for i in range(indx,len(freq)):
-                max=end*gap+10
-                if freq[i]>max:
-                    indx=i
-                    return indx
-        def getMaxPow(start,end,Yaxis):
-            if sum(Yaxis[start:end])!=0:
-                return max(Yaxis[start:end])
-            else:
-                return 0
-        def pitchEstimator(path):
-            sr, audio = wavfile.read(path)
-            time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True,step_size=1500)
-            lis=[]
-            for i,j in enumerate(confidence):
-                if j > 0.89:
-                    lis.append(i)
-            val=[frequency[i] for i in lis]
-            return sum(val)/len(val)
+    #     warnings.filterwarnings('ignore')
+    #     warnings.warn('Do not show this message')
+    #     base="./AudioFiles/" + folder_name
+    #     sar = []
+    #     for filename in os.scandir(base):
+    #         sar.append(filename.path)
+    #     voice = []
+    #     for j in range(len(sar)):
+    #         voice1, sr = librosa.load(sar[j])
+    #         voice.append(voice1)
+    #     def limitFreq(freq,size):
+    #         for i,j in enumerate(freq):
+    #             if j>size:
+    #                 return i
+    #     def remove_till_limit(Xaxis,limit,maxBins):
+    #         newX=[]
+    #         for i in Xaxis[:maxBins]:
+    #             if i<limit:
+    #                 newX.append(0)
+    #             else:
+    #                 newX.append(i)
+    #         return newX
+    #     def getFundamental(Xaxis,bins):
+    #         for i,j in enumerate(Xaxis[20:bins]):
+    #             if j>0:
+    #                 return i
+    #     def getIndxTill(end,freq,indx,gap):
+    #         for i in range(indx,len(freq)):
+    #             max=end*gap+10
+    #             if freq[i]>max:
+    #                 indx=i
+    #                 return indx
+    #     def getMaxPow(start,end,Yaxis):
+    #         if sum(Yaxis[start:end])!=0:
+    #             return max(Yaxis[start:end])
+    #         else:
+    #             return 0
+    #     def pitchEstimator(path):
+    #         sr, audio = wavfile.read(path)
+    #         time, frequency, confidence, activation = crepe.predict(audio, sr, viterbi=True,step_size=1500)
+    #         lis=[]
+    #         for i,j in enumerate(confidence):
+    #             if j > 0.89:
+    #                 lis.append(i)
+    #         val=[frequency[i] for i in lis]
+    #         return sum(val)/len(val)
 
-        Pitch=[]
+    #     Pitch=[]
 
-        def findCoordinates(path,voice,i):
-            X = np.fft.fft(voice)
-            X_mag = np.absolute(X)
-            power_spectrum = np.square(X_mag)
-            f = np.linspace(0, sr, len(power_spectrum))
-            f_bins=limitFreq(f,2000)
-            newX_mag=remove_till_limit(power_spectrum,1000,f_bins)
-            pitch=Pitch[i-1]
-            Harmonics=[]
-            l=[1]
-            totalSplit=int(round(2000/pitch))
-            for i in range(totalSplit):
-                index=getIndxTill(pitch,f,l[i],i+1)
-                l.append(index)
-                Harmonics.append(getMaxPow(l[i],l[i+1],newX_mag))
-            Harmonics = [i for i in Harmonics if i != 0]
-            midBand = sum(Harmonics[1:4])/sum(Harmonics)
-            highBand = sum(Harmonics[4:])/sum(Harmonics)
-            # plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
-            return [midBand,highBand]
+    #     def findCoordinates(path,voice,i):
+    #         X = np.fft.fft(voice)
+    #         X_mag = np.absolute(X)
+    #         power_spectrum = np.square(X_mag)
+    #         f = np.linspace(0, sr, len(power_spectrum))
+    #         f_bins=limitFreq(f,2000)
+    #         newX_mag=remove_till_limit(power_spectrum,1000,f_bins)
+    #         pitch=Pitch[i-1]
+    #         Harmonics=[]
+    #         l=[1]
+    #         totalSplit=int(round(2000/pitch))
+    #         for i in range(totalSplit):
+    #             index=getIndxTill(pitch,f,l[i],i+1)
+    #             l.append(index)
+    #             Harmonics.append(getMaxPow(l[i],l[i+1],newX_mag))
+    #         Harmonics = [i for i in Harmonics if i != 0]
+    #         midBand = sum(Harmonics[1:4])/sum(Harmonics)
+    #         highBand = sum(Harmonics[4:])/sum(Harmonics)
+    #         # plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
+    #         return [midBand,highBand]
 
-        def plot_power_spectrum(path,voice,i):
-            X = np.fft.fft(voice)
-            X_mag = np.absolute(X)
-            power_spectrum = np.square(X_mag)
-            f = np.linspace(0, sr, len(power_spectrum))
-            f_bins=limitFreq(f,2000)
-            pitch=round(pitchEstimator(path))
-            Pitch.append(pitch)
-            plt.subplot(3,6,i)
-            plt.plot(f[1:f_bins], power_spectrum[1:f_bins])
-            plt.xlabel('Frequency (Hz)')
-            plt.ylabel('Power')
-            plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
+    #     def plot_power_spectrum(path,voice,i):
+    #         X = np.fft.fft(voice)
+    #         X_mag = np.absolute(X)
+    #         power_spectrum = np.square(X_mag)
+    #         f = np.linspace(0, sr, len(power_spectrum))
+    #         f_bins=limitFreq(f,2000)
+    #         pitch=round(pitchEstimator(path))
+    #         Pitch.append(pitch)
+    #         plt.subplot(3,6,i)
+    #         plt.plot(f[1:f_bins], power_spectrum[1:f_bins])
+    #         plt.xlabel('Frequency (Hz)')
+    #         plt.ylabel('Power')
+    #         plt.title('Power Spectrum ' + f"Pitch = {pitch} Hz")
 
-        # PLOTTING POWER SPECTRUM AND SAVING THEM.
-        plt.figure(figsize=(25, 15))
-        for j in range(len(sar)):
-            plot_power_spectrum(sar[j],voice[j],j+1)
-        plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
-        plt.savefig('pow'+folder_name)
-        plt.clf()
+    #     # PLOTTING POWER SPECTRUM AND SAVING THEM.
+    #     plt.figure(figsize=(25, 15))
+    #     for j in range(len(sar)):
+    #         plot_power_spectrum(sar[j],voice[j],j+1)
+    #     plt.subplots_adjust(left=0.1, bottom=0.1, right=0.9, top=0.9, wspace=0.4, hspace=0.4)
+    #     plt.savefig('pow'+folder_name)
+    #     plt.clf()
 
-        # FINDING MIDBAND & HIGHBAND
-        coordinates = []
-        for j in range(len(sar)):
-            coordinates.append(findCoordinates(sar[j],voice[j],j+1))
+    #     # FINDING MIDBAND & HIGHBAND
+    #     coordinates = []
+    #     for j in range(len(sar)):
+    #         coordinates.append(findCoordinates(sar[j],voice[j],j+1))
 
-        grey_count = 0
-        central_count = 0
-        for coordinate in coordinates:
-            if ( coordinate[1]>=0.9 and coordinate[0]<=0.1 ) or (coordinate[1] <=0.1 and coordinate[0] <=0.1) or (coordinate[1]<=0.2 and coordinate[0]>=0.8):
-                grey_count+=1
-            if (0.1<=coordinate[1]<= 0.5) and (0.2<=coordinate[0]<=0.7):
-                central_count+=1
+    #     grey_count = 0
+    #     central_count = 0
+    #     for coordinate in coordinates:
+    #         if ( coordinate[1]>=0.9 and coordinate[0]<=0.1 ) or (coordinate[1] <=0.1 and coordinate[0] <=0.1) or (coordinate[1]<=0.2 and coordinate[0]>=0.8):
+    #             grey_count+=1
+    #         if (0.1<=coordinate[1]<= 0.5) and (0.2<=coordinate[0]<=0.7):
+    #             central_count+=1
 
-        # DUMPING VALUES TO JSON
-        filename = 'output1.json'
-        if type =="Aroh":
-            dictionary ={
-                "tonic" : Pitch[0],
-                "highest": [max(Pitch)],
-                # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
-                # "highest2": [Pitch[9],coordinates[9][0],coordinates[9][1]],
-                "grey_count" : grey_count,
-                "central_count" : central_count
-            }
-        else:
-            dictionary ={
-                "tonic" : Pitch[-1],
-                "lowest": [min(Pitch)],
-                # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
-                # "highest2": [Pitch[9],coordinates[9][0],coordinates[9][1]],
-                "grey_count" : grey_count,
-                "central_count" : central_count
-            }
-        with open(filename, "r") as file:
-            data = json.loads(file.read())
-        try:
-            del data[base]
-        except:
-            pass
-        data[base] = dictionary
-        with open(filename, "w") as file:
-            json.dump(data, file)
+    #     # DUMPING VALUES TO JSON
+    #     filename = 'output1.json'
+    #     if type =="Aroh":
+    #         dictionary ={
+    #             "tonic" : Pitch[0],
+    #             "highest": [max(Pitch)],
+    #             # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
+    #             # "highest2": [Pitch[9],coordinates[9][0],coordinates[9][1]],
+    #             "grey_count" : grey_count,
+    #             "central_count" : central_count
+    #         }
+    #     else:
+    #         dictionary ={
+    #             "tonic" : Pitch[-1],
+    #             "lowest": [min(Pitch)],
+    #             # "highest1" : [Pitch[10],coordinates[10][0],coordinates[10][1]],
+    #             # "highest2": [Pitch[9],coordinates[9][0],coordinates[9][1]],
+    #             "grey_count" : grey_count,
+    #             "central_count" : central_count
+    #         }
+    #     with open(filename, "r") as file:
+    #         data = json.loads(file.read())
+    #     try:
+    #         del data[base]
+    #     except:
+    #         pass
+    #     data[base] = dictionary
+    #     with open(filename, "w") as file:
+    #         json.dump(data, file)
 
-        # PLOTTING TRISTIMULUS DIAGRAM
-        data = np.array(coordinates)
-        y, x = data.T
-        # n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
-        plt.figure(figsize=(25, 15))
-        plt.rcParams['font.size'] = '10'
-        triA1 = [ 0, 0.1, 0, 0 ]
-        triA2 = [ 0, 0, 0.1, 0 ]
-        triB1 = [ 0, 0.1, 0, 0 ]
-        triB2 = [ 0.9, 0.9, 1, 0.9]
-        triC1 = [ 0.8,  0.8, 1.0, 0.8 ]
-        triC2 = [ 0, 0.2, 0, 0 ]
-        plt.fill(triA1, triA2, color='#BABABA')
-        plt.fill(triB1, triB2, color='#BABABA')
-        plt.fill(triC1, triC2, color='#BABABA')
-        plt.scatter(x, y,s=50)
-        plt.xlabel('Power in High Band',fontsize=18)
-        plt.ylabel('Power in Mid Band',fontsize=18)
-        plt.plot([1,0],[0,1], 'k-',linewidth=1)
-        plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
-        plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
-        plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
-        plt.xlim(0,1)
-        plt.ylim(0,1)
-        plt.savefig('tri'+folder_name)
-        plt.clf()
+    #     # PLOTTING TRISTIMULUS DIAGRAM
+    #     data = np.array(coordinates)
+    #     y, x = data.T
+    #     # n=['sa','re','ga','ma','pa','dha','ni','sa`','re`','ga`','ma`','ga','re','sa']
+    #     plt.figure(figsize=(25, 15))
+    #     plt.rcParams['font.size'] = '10'
+    #     triA1 = [ 0, 0.1, 0, 0 ]
+    #     triA2 = [ 0, 0, 0.1, 0 ]
+    #     triB1 = [ 0, 0.1, 0, 0 ]
+    #     triB2 = [ 0.9, 0.9, 1, 0.9]
+    #     triC1 = [ 0.8,  0.8, 1.0, 0.8 ]
+    #     triC2 = [ 0, 0.2, 0, 0 ]
+    #     plt.fill(triA1, triA2, color='#BABABA')
+    #     plt.fill(triB1, triB2, color='#BABABA')
+    #     plt.fill(triC1, triC2, color='#BABABA')
+    #     plt.scatter(x, y,s=50)
+    #     plt.xlabel('Power in High Band',fontsize=18)
+    #     plt.ylabel('Power in Mid Band',fontsize=18)
+    #     plt.plot([1,0],[0,1], 'k-',linewidth=1)
+    #     plt.plot([0,0.1],[0.9,0.9], 'k-',linewidth=1)
+    #     plt.plot([0.1,0],[0,0.1], 'k-',linewidth=1)
+    #     plt.plot([0.8,0.8],[0,0.2], 'k-',linewidth=1)
+    #     plt.xlim(0,1)
+    #     plt.ylim(0,1)
+    #     plt.savefig('tri'+folder_name)
+    #     plt.clf()
 
 
 # SECOND WINDOW - PROGRAM OPTIONS
